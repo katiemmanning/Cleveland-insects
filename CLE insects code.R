@@ -22,22 +22,22 @@ allbugs19$sitetype<-ifelse(allbugs19$Site=="SSH", "Natural",
 str(allbugs19)
 
 #To obtain richness counts
-allbugs19.rowsums <- rowSums(allbugs19[,4:41]>0)
+allbugs19.rowsums <- rowSums(allbugs19[,4:43]>0)
 allbugs19$richness <- allbugs19.rowsums
 
 #To obtain abundance counts
-allbugs19.abun <- rowSums(allbugs19[,4:41])
+allbugs19.abun <- rowSums(allbugs19[,4:43])
 allbugs19$abundance <- allbugs19.abun
 
 #load vegan
 library(vegan)
 
 #calculate Shannon diversity
-diversity <-diversity(allbugs19[,4:41])
+diversity <-diversity(allbugs19[,4:43])
 allbugs19$diversity <-diversity
 
 #calculate Evenness
-evenness <-diversity/log(specnumber(allbugs19[,4:41]))
+evenness <-diversity/log(specnumber(allbugs19[,4:43]))
 allbugs19$evenness <- evenness
 
 summary(allbugs19)
@@ -80,19 +80,19 @@ allbugs21$sitetype<-ifelse(allbugs21$Site=="SSH", "Natural",
 str(allbugs21)
 
 #To obtain richness counts
-allbugs21.rowsums <- rowSums(allbugs21[,4:37]>0)
+allbugs21.rowsums <- rowSums(allbugs21[,4:43]>0)
 allbugs21$richness <- allbugs21.rowsums
 
 #To obtain abundance counts
-allbugs21.abun <- rowSums(allbugs21[,4:37])
+allbugs21.abun <- rowSums(allbugs21[,4:43])
 allbugs21$abundance <- allbugs21.abun
 
 #calculate Shannon diversity
-diversity <-diversity(allbugs21[,4:37])
+diversity <-diversity(allbugs21[,4:43])
 allbugs21$diversity <-diversity
 
 #calculate Evenness
-evenness <-diversity/log(specnumber(allbugs21[,4:37]))
+evenness <-diversity/log(specnumber(allbugs21[,4:43]))
 allbugs21$evenness <- evenness
 
 summary(allbugs21)
@@ -108,3 +108,253 @@ str(greenroofbugs21)
 #add data subset for natural sites
 naturalbugs21 <- allbugs21[ which(allbugs21$sitetype=="Natural"), ]
 str(naturalbugs21)
+
+###
+
+#put together all 2019 and 2021 data
+allbugs <- rbind.fill (allbugs19, allbugs21)
+str (allbugs)
+
+#models and checking assumptions
+library (emmeans) #for pairwise comparisons
+library (lme4)
+library (lmerTest) #to obtain p values
+library (multcompView) #to view letters
+library (nortest)
+library (car)
+library (bbmle)
+library (DHARMa)
+library (ggplot2)
+library (sjPlot)
+library (jtools)
+library (interactions)
+
+##richness linear model
+richmodel <- lm(richness~Date + Site + sitetype, data=allbugs)  #AIC = 1930
+summary(richmodel)
+AIC(richmodel)
+anova(richmodel) 
+
+rich.emm<-emmeans(richmodel,pairwise~sitetype) #comparing natural vs GR
+rich.emm
+#results: no difference between natural and green roofs (p=0.07)
+rich.cld<-multcomp::cld(rich.emm, alpha = 0.05, Letters = LETTERS)
+rich.cld 
+
+#check assumptions
+dotchart(allbugs$richness, main = "richness") # way to visualize outliers
+
+with(allbugs, ad.test(richness)) #Anderson-darling test for normality (good for small sample sizes), low p-value means assumption is violated
+#p-value = 1.091e-08
+
+with(allbugs, bartlett.test(richness ~ sitetype)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
+#p-value = 0.1285
+
+plot(richmodel) # check distribution of residuals
+
+# check normality with these figures, are there outliers at either end
+qqnorm(resid(richmodel))
+qqline(resid(richmodel))
+
+plot(simulateResiduals(richmodel)) # another way to check for normailty and homogeneity of variance
+#KS test: p = 0.95682
+#dispersion test: p = 0.616
+#outlier test: p = 0.27415
+#no significant problems detected 
+
+densityPlot(rstudent(richmodel)) # check density estimate of the distribution of residuals
+
+# check for outliers influencing the data
+outlierTest(richmodel)
+influenceIndexPlot(richmodel, vars = c("Cook"), id = list(n = 3))
+
+#
+
+##abundance linear model
+#abunmodel <- glmer(abundance~region + Date + Trap + (1|Site:Replicate),data=allbugs, family = negative.binomial(2)) #AIC 2501
+abunmodel <- lm(abundance~Date + Site + sitetype, data=allbugs)  #AIC = 6321
+abunmodel <- glm(abundance~Date + Site + sitetype, data=allbugs, family = negative.binomial(4))  #AIC = 
+summary(abunmodel)
+AIC(abunmodel)
+anova(abunmodel)
+abun.emm<-emmeans(abunmodel,pairwise~sitetype) 
+abun.emm
+#results: no difference between natural and green roofs (p=0.35)
+abun.cld<-multcomp::cld(abun.emm, alpha = 0.05, Letters = LETTERS)
+abun.cld 
+
+#check assumptions
+dotchart(allbugs$abundance, main = "abundance") # way to visualize outliers
+#clustered towards 0 --- outlier of 7000
+
+with(allbugs, ad.test(abundance)) #Anderson-darling test for normality (good for small sample sizes), low p-value means assumption is violated
+#p-value = < 2.2e-16
+
+with(allbugs, bartlett.test(abundance ~ sitetype)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
+#p-value = < 2.2e-16
+
+plot(abunmodel) # check distribution of residuals
+
+# check normality with these figures, are there outliers at either end
+qqnorm(resid(abunmodel))
+qqline(resid(abunmodel))
+
+plot(simulateResiduals(abunmodel)) # another way to check for normality and homogeneity of variance
+#KS test: p = 0  *sig deviation
+#dispersion test: p = 
+#outlier test: p = 
+#no significant problems detected 
+
+densityPlot(rstudent(abunmodel)) # check density estimate of the distribution of residuals
+
+# check for outliers influencing the data
+outlierTest(abunmodel)
+influenceIndexPlot(abunmodel, vars = c("Cook"), id = list(n = 3))
+
+#
+
+##diversity linear mixed effects model
+divmodel <- lm(diversity~Date + Site + sitetype, data=allbugs)  #AIC = 528
+summary(divmodel)
+AIC(divmodel)
+anova(divmodel)
+
+div.emm<-emmeans(divmodel,pairwise~sitetype) 
+div.emm
+#results: no difference between natural and green roofs (p=0.47)
+div.cld<-multcomp::cld(div.emm, alpha = 0.05, Letters = LETTERS)
+div.cld 
+
+#check assumptions
+dotchart(allbugs$diversity, main = "diversity") # way to visualize outliers
+
+with(allbugs, ad.test(diversity)) #Anderson-darling test for normality (good for small sample sizes), low p-value means assumption is violated
+#p-value = 4.764e-08
+
+with(allbugs, bartlett.test(diversity ~ sitetype)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
+#p-value = 0.01665
+
+plot(divmodel) # check distribution of residuals
+
+# check normality with these figures, are there outliers at either end
+qqnorm(resid(divmodel))
+qqline(resid(divmodel))
+
+plot(simulateResiduals(divmodel)) # another way to check for normailty and homogeneity of variance
+#KS test: p = 0.05355
+#dispersion test: p = 0.616
+#outlier test: p = 0.7801
+#no significant problems detected  
+
+densityPlot(rstudent(divmodel)) # check density estimate of the distribution of residuals
+
+# check for outliers influencing the data
+outlierTest(divmodel)
+influenceIndexPlot(divmodel, vars = c("Cook"), id = list(n = 3))
+
+#
+
+##evenness linear mixed effects model
+evenmodel <- lm(evenness~Date + Site + sitetype, data=allbugs)  #AIC = -67
+summary(evenmodel)
+AIC(evenmodel)
+anova(evenmodel) 
+
+even.emm<-emmeans(evenmodel,pairwise~sitetype) 
+even.emm
+#results: difference between natural and green roofs (p=0.0091)
+even.cld<-multcomp::cld(even.emm, alpha = 0.05, Letters = LETTERS)
+even.cld 
+
+#check assumptions
+dotchart(allbugs$evenness, main = "evenness") # way to visualize outliers
+
+with(allbugs, ad.test(evenness)) #Anderson-darling test for normality (good for small sample sizes), low p-value means assumption is violated
+#p-value = 5.155e-11
+
+with(allbugs, bartlett.test(evenness ~ sitetype)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
+#p-value = 0.08879
+
+plot(evenmodel) # check distribution of residuals
+
+# check normality with these figures, are there outliers at either end
+qqnorm(resid(evenmodel))
+qqline(resid(evenmodel))
+
+plot(simulateResiduals(evenmodel)) # another way to check for normailty and homogeneity of variance
+#KS test: p = 0.1027
+#dispersion test: p = 0.6
+#outlier test: p = 1
+#no significant problems detected 
+
+densityPlot(rstudent(evenmodel)) # check density estimate of the distribution of residuals
+
+# check for outliers influencing the data
+outlierTest(evenmodel)
+influenceIndexPlot(evenmodel, vars = c("Cook"), id = list(n = 3))
+
+#######
+#ggplot box plots
+library (ggplot2)
+
+#site richness by site type
+richness.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = richness, fill=Site))+
+  geom_boxplot()+
+  theme_bw()+
+  theme(legend.position="bottom")+
+  labs(title="", x="", y="Richness")+
+  #theme (plot.title = element_text(hjust=0.5))+
+  scale_fill_brewer(palette="Paired",name="Sites:",
+                    breaks=c("BFB", "DGM", "SSH", "EWB", "WSC", "HDB", "SNC"),
+                    labels=c("Bedford barren","Dusty goldenrod meadow", "Slate shale hill", "Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
+richness.plot
+
+#site abundance by site type
+abundance.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = abundance, fill=Site))+
+  geom_boxplot()+
+  theme_bw()+
+  theme(legend.position="bottom")+
+  labs(title="", x="", y="Abundance (log10)")+
+  scale_y_continuous(trans="log10")+
+  #theme (plot.title = element_text(hjust=0.5))+
+  scale_fill_brewer(palette="Paired",name="Sites:",
+                    breaks=c("BFB", "DGM", "SSH", "EWB", "WSC", "HDB", "SNC"),
+                    labels=c("Bedford barren","Dusty goldenrod meadow", "Slate shale hill", "Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
+abundance.plot
+
+#site diversity by site type
+diversity.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = diversity, fill=Site))+
+  geom_boxplot()+
+  theme_bw()+
+  theme(legend.position="bottom")+
+  labs(title="", x="", y="Diversity")+
+  #theme (plot.title = element_text(hjust=0.5))+
+  scale_fill_brewer(palette="Paired",name="Sites:",
+                    breaks=c("BFB", "DGM", "SSH", "EWB", "WSC", "HDB", "SNC"),
+                    labels=c("Bedford barren","Dusty goldenrod meadow", "Slate shale hill", "Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
+diversity.plot
+
+#site evenness by site type
+evenness.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = evenness, fill=Site))+
+  geom_boxplot()+
+  theme_bw()+
+  theme(legend.position="bottom")+
+  labs(title="", x="", y="Evenness")+
+  #theme (plot.title = element_text(hjust=0.5))+
+  scale_fill_brewer(palette="Paired",name="Sites:",
+                    breaks=c("BFB", "DGM", "SSH", "EWB", "WSC", "HDB", "SNC"),
+                    labels=c("Bedford barren","Dusty goldenrod meadow", "Slate shale hill", "Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
+evenness.plot
+
+###
+#mush together plots
+library(ggpubr) 
+allbugs_boxplot <- ggarrange(richness.plot, abundance.plot, diversity.plot, evenness.plot,
+                             #labels = c("A", "B", "C", "D"),
+                             ncol = 1, nrow = 4,
+                             common.legend = TRUE, legend = "bottom")
+allbugs_boxplot
+
+pdf("allbugs_boxplot.pdf", height=8, width=8) #height and width in inches
+allbugs_boxplot
+dev.off()
