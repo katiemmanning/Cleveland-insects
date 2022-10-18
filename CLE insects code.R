@@ -358,3 +358,74 @@ allbugs_boxplot
 pdf("allbugs_boxplot.pdf", height=8, width=8) #height and width in inches
 allbugs_boxplot
 dev.off()
+
+###
+
+#NMDS of insect community 
+library (vegan)
+
+###need to pool data
+#bring in data pooled by site
+bowls_pooled <- read.csv("https://raw.githubusercontent.com/katiemmanning/Thin-soil/main/Data/Insect%20ID%202019%20-%20Bowl_natural_pooled.csv",na.strings = NULL)
+ramps_pooled <- read.csv("https://raw.githubusercontent.com/katiemmanning/Thin-soil/main/Data/Insect%20ID%202019%20-%20Ramp_natural_pooled.csv",na.strings = NULL)
+sticky_pooled <- read.csv("https://raw.githubusercontent.com/katiemmanning/Thin-soil/main/Data/Insect%20ID%202019%20-%20Sticky%20card_natural_pooled.csv",na.strings = NULL)
+
+#add trap type as a column on each data file
+bowls_pooled$Trap="bowl"
+ramps_pooled$Trap="ramp"
+sticky_pooled$Trap="sticky"
+
+#combine data tables 
+library(plyr)
+bowlramp_pooled <- rbind.fill (bowls_pooled, ramps_pooled)
+allbugs_pooled <-rbind.fill (bowlramp_pooled, sticky_pooled)
+
+#Create matrix of environmental variables    
+env.matrix<-allbugs[c(1:3,44)]
+
+#create matrix of community variables
+com.matrix<-allbugs[c(4:43)]
+
+#change to presence/absence
+com.matrix[com.matrix > 0] <- 1
+str(com.matrix)
+rowSums(com.matrix)
+
+#ordination by NMDS
+NMDS<-metaMDS(com.matrix, distance="bray", k=2, autotransform=TRUE, trymax=300)
+NMDS
+###stress = 0.22
+stressplot(NMDS)
+
+#plot NMDS for region
+#might need to change colors
+#8 x 13
+plot(NMDS, disp='sites', type="n")
+#title(main="Arthropod community composition by region", cex.main=1.5)
+#add ellipsoids with ordiellipse
+ordiellipse(NMDS, env.matrix$region, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "South")
+ordiellipse(NMDS, env.matrix$region, draw="polygon", col="#E69F00",kind="sd", conf=0.95, label=FALSE, show.groups = "North")
+ordiellipse(NMDS, env.matrix$region, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Central") 
+#add data points
+points(NMDS, display="sites", select=which(env.matrix$region=="North"),pch=19, col="#E69F00")
+points(NMDS, display="sites", select=which(env.matrix$region=="Central"), pch=17, col="#009E73")
+points(NMDS, display="sites", select=which(env.matrix$region=="South"), pch=15, col="#CC79A7")
+#add legend
+legend(0.888,0.83, title=NULL, pch=c(19,17,15), col=c("#E69F00","#009E73","#CC79A7"), cex=1.5, legend=c("North", "Central", "South"))
+
+#bootstrapping and testing for differences between the groups (regions)
+fit<-adonis(com.matrix ~ region, data = env.matrix, permutations = 999, method="bray")
+fit
+#P=0.001
+
+#check assumption of homogeneity of multivariate dispersion 
+#P-value greater than 0.05 means assumption has been met
+distances_data<-vegdist(com.matrix)
+anova(betadisper(distances_data, env.matrix$region))
+#P-value = 0.001 -- cannot assume homogeneity of multivariate dispersion
+
+#pairwise adonis
+library(pairwiseAdonis)
+pairwise.adonis(com.matrix, env.matrix$region) #south-central sig
+
+###
