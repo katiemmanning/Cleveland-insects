@@ -114,6 +114,8 @@ str(naturalbugs21)
 #put together all 2019 and 2021 data
 allbugs <- rbind.fill (allbugs19, allbugs21)
 str (allbugs)
+#print data into csv file for pooling purposes later
+write.csv(allbugs, file="allbugs_2019 and 2021.csv", row.names=FALSE)
 
 #models and checking assumptions
 library (emmeans) #for pairwise comparisons
@@ -137,7 +139,7 @@ anova(richmodel)
 
 rich.emm<-emmeans(richmodel,pairwise~sitetype) #comparing natural vs GR
 rich.emm
-#results: no difference between natural and green roofs (p=0.07)
+#results: difference between natural and green roofs (p=0.0006)
 rich.cld<-multcomp::cld(rich.emm, alpha = 0.05, Letters = LETTERS)
 rich.cld 
 
@@ -214,14 +216,14 @@ influenceIndexPlot(abunmodel, vars = c("Cook"), id = list(n = 3))
 #
 
 ##diversity linear mixed effects model
-divmodel <- lm(diversity~Date + Site + sitetype, data=allbugs)  #AIC = 528
+divmodel <- lm(diversity~Date + Site + sitetype, data=allbugs)  #AIC = 526
 summary(divmodel)
 AIC(divmodel)
 anova(divmodel)
 
 div.emm<-emmeans(divmodel,pairwise~sitetype) 
 div.emm
-#results: no difference between natural and green roofs (p=0.47)
+#results: no difference between natural and green roofs (p=0.6176)
 div.cld<-multcomp::cld(div.emm, alpha = 0.05, Letters = LETTERS)
 div.cld 
 
@@ -262,7 +264,7 @@ anova(evenmodel)
 
 even.emm<-emmeans(evenmodel,pairwise~sitetype) 
 even.emm
-#results: difference between natural and green roofs (p=0.0091)
+#results: difference between natural and green roofs (p < 0.0001)
 even.cld<-multcomp::cld(even.emm, alpha = 0.05, Letters = LETTERS)
 even.cld 
 
@@ -304,6 +306,7 @@ richness.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Gree
   theme(legend.position="bottom")+
   labs(title="", x="", y="Richness")+
   #theme (plot.title = element_text(hjust=0.5))+
+  geom_text(data=rich.cld, aes(y = 25, label = .group))+
   scale_fill_brewer(palette="Paired",name="Sites:",
                     breaks=c("BFB", "DGM", "SSH", "EWB", "WSC", "HDB", "SNC"),
                     labels=c("Bedford barren","Dusty goldenrod meadow", "Slate shale hill", "Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
@@ -317,6 +320,7 @@ abundance.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Gre
   labs(title="", x="", y="Abundance (log10)")+
   scale_y_continuous(trans="log10")+
   #theme (plot.title = element_text(hjust=0.5))+
+  geom_text(data=abun.cld, aes(y = 25, label = .group))+
   scale_fill_brewer(palette="Paired",name="Sites:",
                     breaks=c("BFB", "DGM", "SSH", "EWB", "WSC", "HDB", "SNC"),
                     labels=c("Bedford barren","Dusty goldenrod meadow", "Slate shale hill", "Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
@@ -329,6 +333,7 @@ diversity.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Gre
   theme(legend.position="bottom")+
   labs(title="", x="", y="Diversity")+
   #theme (plot.title = element_text(hjust=0.5))+
+  geom_text(data=div.cld, aes(y = 25, label = .group))+
   scale_fill_brewer(palette="Paired",name="Sites:",
                     breaks=c("BFB", "DGM", "SSH", "EWB", "WSC", "HDB", "SNC"),
                     labels=c("Bedford barren","Dusty goldenrod meadow", "Slate shale hill", "Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
@@ -341,6 +346,7 @@ evenness.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Gree
   theme(legend.position="bottom")+
   labs(title="", x="", y="Evenness")+
   #theme (plot.title = element_text(hjust=0.5))+
+  geom_text(data=even.cld, aes(y = 25, label = .group))+
   scale_fill_brewer(palette="Paired",name="Sites:",
                     breaks=c("BFB", "DGM", "SSH", "EWB", "WSC", "HDB", "SNC"),
                     labels=c("Bedford barren","Dusty goldenrod meadow", "Slate shale hill", "Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
@@ -364,11 +370,9 @@ dev.off()
 #NMDS of insect community 
 library (vegan)
 
-###need to pool data
-#bring in data pooled by site
-bowls_pooled <- read.csv("https://raw.githubusercontent.com/katiemmanning/Thin-soil/main/Data/Insect%20ID%202019%20-%20Bowl_natural_pooled.csv",na.strings = NULL)
-ramps_pooled <- read.csv("https://raw.githubusercontent.com/katiemmanning/Thin-soil/main/Data/Insect%20ID%202019%20-%20Ramp_natural_pooled.csv",na.strings = NULL)
-sticky_pooled <- read.csv("https://raw.githubusercontent.com/katiemmanning/Thin-soil/main/Data/Insect%20ID%202019%20-%20Sticky%20card_natural_pooled.csv",na.strings = NULL)
+#bring in data pooled by date-site
+allbugs_pooled <- read.csv("", na.strings = NULL)
+
 
 #add trap type as a column on each data file
 bowls_pooled$Trap="bowl"
