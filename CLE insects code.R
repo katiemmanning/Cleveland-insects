@@ -371,24 +371,13 @@ dev.off()
 library (vegan)
 
 #bring in data pooled by date-site
-allbugs_pooled <- read.csv("", na.strings = NULL)
-
-
-#add trap type as a column on each data file
-bowls_pooled$Trap="bowl"
-ramps_pooled$Trap="ramp"
-sticky_pooled$Trap="sticky"
-
-#combine data tables 
-library(plyr)
-bowlramp_pooled <- rbind.fill (bowls_pooled, ramps_pooled)
-allbugs_pooled <-rbind.fill (bowlramp_pooled, sticky_pooled)
+allbugs_pooled <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_2019%20and%202021_pooled.csv", na.strings = NULL)
 
 #Create matrix of environmental variables    
-env.matrix<-allbugs[c(1:3,44)]
+env.matrix<-allbugs_pooled[c(1:3)]
 
 #create matrix of community variables
-com.matrix<-allbugs[c(4:43)]
+com.matrix<-allbugs_pooled[c(4:43)]
 
 #change to presence/absence
 com.matrix[com.matrix > 0] <- 1
@@ -398,38 +387,36 @@ rowSums(com.matrix)
 #ordination by NMDS
 NMDS<-metaMDS(com.matrix, distance="bray", k=2, autotransform=TRUE, trymax=300)
 NMDS
-###stress = 0.22
+###stress = 0.20
 stressplot(NMDS)
 
 #plot NMDS for region
 #might need to change colors
 #8 x 13
 plot(NMDS, disp='sites', type="n")
-#title(main="Arthropod community composition by region", cex.main=1.5)
+#title(main="Arthropod community composition by site type", cex.main=1.5)
 #add ellipsoids with ordiellipse
-ordiellipse(NMDS, env.matrix$region, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "South")
-ordiellipse(NMDS, env.matrix$region, draw="polygon", col="#E69F00",kind="sd", conf=0.95, label=FALSE, show.groups = "North")
-ordiellipse(NMDS, env.matrix$region, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Central") 
+ordiellipse(NMDS, env.matrix$sitetype, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Greenroof")
+ordiellipse(NMDS, env.matrix$sitetype, draw="polygon", col="#E69F00",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
 #add data points
-points(NMDS, display="sites", select=which(env.matrix$region=="North"),pch=19, col="#E69F00")
-points(NMDS, display="sites", select=which(env.matrix$region=="Central"), pch=17, col="#009E73")
-points(NMDS, display="sites", select=which(env.matrix$region=="South"), pch=15, col="#CC79A7")
+points(NMDS, display="sites", select=which(env.matrix$sitetype=="Natural"),pch=19, col="#E69F00")
+points(NMDS, display="sites", select=which(env.matrix$sitetype=="Greenroof"), pch=17, col="#009E73")
 #add legend
-legend(0.888,0.83, title=NULL, pch=c(19,17,15), col=c("#E69F00","#009E73","#CC79A7"), cex=1.5, legend=c("North", "Central", "South"))
+legend(0.92,0.68, title=NULL, pch=c(19,17,15), col=c("#E69F00","#009E73"), cex=1.5, legend=c("Natural", "Greenroof"))
 
 #bootstrapping and testing for differences between the groups (regions)
-fit<-adonis(com.matrix ~ region, data = env.matrix, permutations = 999, method="bray")
+fit<-adonis(com.matrix ~ sitetype, data = env.matrix, permutations = 999, method="bray")
 fit
 #P=0.001
 
 #check assumption of homogeneity of multivariate dispersion 
 #P-value greater than 0.05 means assumption has been met
 distances_data<-vegdist(com.matrix)
-anova(betadisper(distances_data, env.matrix$region))
-#P-value = 0.001 -- cannot assume homogeneity of multivariate dispersion
+anova(betadisper(distances_data, env.matrix$sitetype))
+#P-value = 0.01 -- cannot assume homogeneity of multivariate dispersion
 
 #pairwise adonis
 library(pairwiseAdonis)
-pairwise.adonis(com.matrix, env.matrix$region) #south-central sig
+pairwise.adonis(com.matrix, env.matrix$sitetype) #sig diff between natural and GR (p=0.001)
 
 ###
