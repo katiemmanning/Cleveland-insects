@@ -144,7 +144,7 @@ rich.cld
 
 rich.emm.s<-emmeans(richmodel,pairwise~Site) 
 rich.emm.s
-#results: difference between natural and green roofs (p=0.0006)
+#results: 
 rich.cld.s<-multcomp::cld(rich.emm.s, alpha = 0.05, Letters = LETTERS)
 rich.cld.s 
 
@@ -287,7 +287,7 @@ even.cld
 
 even.emm.s<-emmeans(evenmodel,pairwise~Site) 
 even.emm.s
-#results: difference between natural and green roofs (p < 0.0001)
+#results: 
 even.cld.s<-multcomp::cld(even.emm.s, alpha = 0.05, Letters = LETTERS)
 even.cld.s 
 
@@ -403,7 +403,7 @@ anova(richmodel.d)
 
 rich.emm.d<-emmeans(richmodel.d,pairwise~design) #comparing habitat vs mitigation
 rich.emm.d
-#results: no difference between natural and green roofs (p=0.4988)
+#results: no difference between hab and mit (p=0.4988)
 rich.cld.d<-multcomp::cld(rich.emm.d, alpha = 0.05, Letters = LETTERS)
 rich.cld.d 
 
@@ -444,7 +444,7 @@ anova(abunmodel.d)
 
 abun.emm.d<-emmeans(abunmodel.d,pairwise~design) 
 abun.emm.d
-#results: difference between natural and green roofs (p=0.0116)
+#results: difference between habitat and mitigation (p=0.0116)
 abun.cld.d<-multcomp::cld(abun.emm.d, alpha = 0.05, Letters = LETTERS)
 abun.cld.d 
 
@@ -486,7 +486,7 @@ anova(divmodel.d)
 
 div.emm.d<-emmeans(divmodel.d,pairwise~design) 
 div.emm.d
-#results: no difference between natural and green roofs (p=0.0557)
+#results: no difference between hab and mit (p=0.0557)
 div.cld.d<-multcomp::cld(div.emm.d, alpha = 0.05, Letters = LETTERS)
 div.cld.d 
 
@@ -527,7 +527,7 @@ anova(evenmodel.d)
 
 even.emm.d<-emmeans(evenmodel,pairwise~design) 
 even.emm.d
-#results: difference between natural and green roofs (p 0.0333)
+#results: difference between hab and mit (p 0.0333)
 even.cld.d<-multcomp::cld(even.emm.d, alpha = 0.05, Letters = LETTERS)
 even.cld.d
 
@@ -620,7 +620,7 @@ evenness.plot.d
 greenroofbugs_boxplot <- ggarrange(richness.plot.d, abundance.plot.d, diversity.plot.d, evenness.plot.d,
                              #labels = c("A", "B", "C", "D"),
                              ncol = 1, nrow = 4,
-                             common.legend = TRUE, legend = "bottom")
+                             common.legend = TRUE, legend = "none")
 greenroofbugs_boxplot
 
 pdf("greenroofbugs_boxplot.pdf", height=8, width=8) #height and width in inches
@@ -628,6 +628,17 @@ greenroofbugs_boxplot
 dev.off()
 
 ###
+
+#merge boxplots into one figure
+multipanel_boxplot <- ggarrange(allbugs_boxplot, greenroofbugs_boxplot,
+                                   labels = c("A", "B"),
+                                   ncol = 2, nrow = 1,
+                                   common.legend = TRUE, legend = "bottom")
+multipanel_boxplot
+
+pdf("multipanel_boxplot.pdf", height=8, width=8) #height and width in inches
+multipanel_boxplot
+dev.off()
 
 #NMDS of insect community 
 library (vegan)
@@ -729,3 +740,23 @@ anova(betadisper(distances_data, env.matrix_gr$design))
 
 ###
 
+#merge NMDSs into one figure and print to PDF
+pdf("multi-NMDS.pdf", height=6.5, width=13)
+par(mfrow=c(1,2), mar=c(4.1, 4.8, 1.5, 8.1),xpd=TRUE) 
+
+plot(NMDS, disp='sites', type="n")
+title(main="A", adj = 0.02, line = -2, cex.main=1.5)
+ordiellipse(NMDS, env.matrix$sitetype, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Greenroof")
+ordiellipse(NMDS, env.matrix$sitetype, draw="polygon", col="#E69F00",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
+points(NMDS, display="sites", select=which(env.matrix$sitetype=="Natural"),pch=19, col="#E69F00")
+points(NMDS, display="sites", select=which(env.matrix$sitetype=="Greenroof"), pch=17, col="#009E73")
+legend(-0.2,1.2, title=NULL, pch=c(19,17), col=c("#E69F00","#009E73"), cex=1.5, legend=c("Natural", "Greenroof"))
+
+plot(NMDS_gr, disp='sites', type="n")
+title(main="B", adj = 0.02, line = -2, cex.main=1.5)
+ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#F0E442",kind="sd", conf=0.95, label=FALSE, show.groups = "Mitigation")
+ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "Habitat")
+points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Habitat"),pch=19, col="#CC79A7")
+points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Mitigation"), pch=17, col="#F0E442")
+legend(-0.155,1.295, title=NULL, pch=c(19,17), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("Habitat", "Mitigation"))
+dev.off()
