@@ -630,6 +630,7 @@ dev.off()
 ###
 
 #merge boxplots into one figure
+#can't figure out the legend
 multipanel_boxplot <- ggarrange(allbugs_boxplot, greenroofbugs_boxplot,
                                    labels = c("A", "B"),
                                    ncol = 2, nrow = 1,
@@ -758,5 +759,5 @@ ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#F0E442",kind="s
 ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "Habitat")
 points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Habitat"),pch=19, col="#CC79A7")
 points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Mitigation"), pch=17, col="#F0E442")
-legend(-0.155,1.295, title=NULL, pch=c(19,17), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("Habitat", "Mitigation"))
+legend(-0.157,1.295, title=NULL, pch=c(19,17), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("Habitat", "Mitigation"))
 dev.off()
