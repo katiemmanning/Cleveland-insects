@@ -677,10 +677,6 @@ distances_data<-vegdist(com.matrix)
 anova(betadisper(distances_data, env.matrix$sitetype))
 #P-value = 0.01 -- cannot assume homogeneity of multivariate dispersion
 
-#pairwise adonis
-library(pairwiseAdonis)
-pairwise.adonis(com.matrix, env.matrix$sitetype) #sig diff between natural and GR (p=0.001)
-
 ###
 
 #NMDS of green roof insect community 
@@ -730,10 +726,6 @@ fit
 distances_data<-vegdist(com.matrix_gr)
 anova(betadisper(distances_data, env.matrix_gr$design))
 #P-value = 0.2024 -- assumes homogeneity of multivariate dispersion
-
-#pairwise adonis
-library(pairwiseAdonis)
-pairwise.adonis(com.matrix_gr, env.matrix_gr$design) #no diff between habitat and mitigation (p=0.0.743)
 
 ###
 
