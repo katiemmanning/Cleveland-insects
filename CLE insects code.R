@@ -192,7 +192,7 @@ abun.cld
 
 abun.emm.s<-emmeans(abunmodel,pairwise~Site) 
 abun.emm.s
-#results: difference between natural and green roofs (p=0.0492)
+#results:
 abun.cld.s<-multcomp::cld(abun.emm.s, alpha = 0.05, Letters = LETTERS)
 abun.cld.s 
 
@@ -240,7 +240,7 @@ div.cld
 
 div.emm.s<-emmeans(divmodel,pairwise~Site) 
 div.emm.s
-#results: no difference between natural and green roofs (p=0.6176)
+#results: 
 div.cld.s<-multcomp::cld(div.emm.s, alpha = 0.05, Letters = LETTERS)
 div.cld.s 
 
