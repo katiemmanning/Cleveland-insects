@@ -751,7 +751,7 @@ ordiellipse(NMDS, env.matrix$sitetype, draw="polygon", col="#009E73",kind="sd", 
 ordiellipse(NMDS, env.matrix$sitetype, draw="polygon", col="#E69F00",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
 points(NMDS, display="sites", select=which(env.matrix$sitetype=="Natural"),pch=19, col="#E69F00")
 points(NMDS, display="sites", select=which(env.matrix$sitetype=="Greenroof"), pch=17, col="#009E73")
-legend(-0.2,1.2, title=NULL, pch=c(19,17), col=c("#E69F00","#009E73"), cex=1.5, legend=c("Natural", "Greenroof"))
+legend(0.505,1.262, title=NULL, pch=c(19,17), col=c("#E69F00","#009E73"), cex=1.5, legend=c("Natural", "Greenroof"))
 
 plot(NMDS_gr, disp='sites', type="n")
 title(main="B", adj = 0.02, line = -2, cex.main=1.5)
@@ -759,7 +759,7 @@ ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#F0E442",kind="s
 ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "Habitat")
 points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Habitat"),pch=19, col="#CC79A7")
 points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Mitigation"), pch=17, col="#F0E442")
-legend(-0.157,1.295, title=NULL, pch=c(19,17), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("Habitat", "Mitigation"))
+legend(-0.145,1.295, title=NULL, pch=c(19,17), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("Habitat", "Mitigation"))
 dev.off()
 
 ###
