@@ -766,79 +766,145 @@ dev.off()
 
 #analyse yellow ramp traps (ramps19) vs jar ramp traps (jars21)
 
+#trap names
+ramps19$Trap="ramp"
+jars21$Trap="jar"
 
+#merge
+#library (plyr)
+ramps <- rbind.fill (ramps19, jars21)
 
+#calculate mean and SE richness, abundance, diversity and evenness of each trap type
 
-#species accumulation for order
+insects.abun <- rowSums(ramps19[,4:43])
+ramps19$abundance <- insects.abun
+insects.rowsums <- rowSums(ramps19[,4:43]>0)
+ramps19$richness <- insects.rowsums
+#need vegan to run diversity and evenness
+diversity <-diversity(ramps19[,4:43])
+ramps19$diversity <-diversity
+evenness <-diversity/log(specnumber(ramps19[,4:43]))
+ramps19$evenness <- evenness
+
+insects.abun <- rowSums(jars21[,4:43])
+jars21$abundance <- insects.abun
+insects.rowsums <- rowSums(jars21[,4:43]>0)
+jars21$richness <- insects.rowsums
+diversity <-diversity(jars21[,4:43])
+jars21$diversity <-diversity
+evenness <-diversity/log(specnumber(jars21[,4:43]))
+jars21$evenness <- evenness
+
+mean(ramps19$abundance) #72.35
+sd(ramps19$abundance)/sqrt(10) #58.84
+
+mean(ramps19$richness) #5.82
+sd(ramps19$richness)/sqrt(10) #0.88
+
+mean(ramps19$diversity) #1.16
+sd(ramps19$diversity)/sqrt(10) #0.15
+
+mean(ramps19$evenness) #0.71
+sd(ramps19$evenness)/sqrt(10) #0.06
+
+mean(jars21$abundance) #7.43
+sd(jars21$abundance)/sqrt(10) #3.84
+
+mean(jars21$richness) #2.46
+sd(jars21$richness)/sqrt(10) #0.54
+
+mean(jars21$diversity) #0.59
+sd(jars21$diversity)/sqrt(10) #0.19
+
+mean(jars21$evenness) #NA
+sd(jars21$evenness)/sqrt(10) #NA
+
+#NMDS of insect community between trap types
+#library (vegan)
+
+#Create matrix of environmental variables
+env.matrix_ramps<-ramps[c(1:3,44)]
+#create matrix of community variables
+com.matrix_ramps<-ramps[c(4:43)]
+
+##Started pooling -- will finish if NMDS is wanted
+#bring in pooled data
+ramps19_pooled <- read.csv("", na.strings = NULL)
+ramps19_pooled <- read.csv("", na.strings = NULL)
+#combine
+#library (plyr)
+ramps_pooled <- rbind.fill (ramps19_pooled, jars21_pooled)
+
+#Create matrix of environmental variables for pooled data
+env.matrix_ramps<-ramps_pooled[c(1:3,44)]
+#create matrix of community variables
+com.matrix_ramps<-ramps_pooled[c(4:43)]
+
+#change to presence/absence
+com.matrix[com.matrix > 0] <- 1
+str(com.matrix)
+rowSums(com.matrix)
+
+#ordination by NMDS
+NMDS_ramps<-metaMDS(com.matrix_ramps, distance="bray", k=2, autotransform=TRUE, trymax=300)
+NMDS_ramps
+stressplot(NMDS_ramps)
+#stress=0.14
+
+#species accumulation 
 library (BiodiversityR)
 library(ggplot2)
 
 #individual curves for each trap type
-ramp.com.matrix<-ramps19[c(5:16)]
+ramp.com.matrix<-ramps19[c(4:43)]
 ramp_curve<-accumresult(ramp.com.matrix, method = "exact", permutations = 1000)
 
-jar.com.matrix<-jars21[c(5:16)]
+jar.com.matrix<-jars21[c(4:43)]
 jar_curve<-accumresult(jar.com.matrix, method = "exact", permutations = 1000)
 
 #first-order jackknife estimates are based on the number of singletons
 #second-order jackknife estimates are based on the number of singletons and doubletons
 
 #calculates order richness for each sample
-specnumber(com.matrix_order) #ranges from 1 to 10
+specnumber(com.matrix_ramps) #ranges from 1 to 14
 
 #calculates order richness by treatment (trap)
-specnumber(com.matrix_order, groups = insects_order$Trap) #jar=12; pitfall=9; ramp=12; sticky=10
+specnumber(com.matrix_ramps, groups = ramps$Trap) #jar=19; ramp=29
 
 #total richness and jackknife
-rich <- diversityresult(com.matrix_order, y=NULL, index = "richness")
-rich # 12
-j1 <- diversityresult(com.matrix_order, y=NULL, index = "jack1")
-j1 # 12
-#100%
-j2 <- diversityresult(com.matrix_order, y=NULL, index = "jack2")
-j2 # 12
-#100%
+rich <- diversityresult(com.matrix_ramps, y=NULL, index = "richness")
+rich # 32
+j1 <- diversityresult(com.matrix_ramps, y=NULL, index = "jack1")
+j1 # 34.976
+#91%
+j2 <- diversityresult(com.matrix_ramps, y=NULL, index = "jack2")
+j2 # 31.095548
+#102% --> 100%
 
-#jar jackknife; richness = 12
-j1.j <- diversityresult(jar.com.matrix_order, y=NULL, index = "jack1")
-j1.j # 13.952381
-#86%
-j2.j <- diversityresult(jar.com.matrix_order, y=NULL, index = "jack2")
-j2.j # 14.927991
-#80%
+#ramp jackknife; richness = 29
+j1.r <- diversityresult(ramp.com.matrix, y=NULL, index = "jack1")
+j1.r # 31.95
+#91%
+j2.r <- diversityresult(ramp.com.matrix, y=NULL, index = "jack2")
+j2.r # 30.098588
+#96%
 
-#pitfall jackknife; richness = 9
-j1.p <- diversityresult(pitfall.com.matrix_order, y=NULL, index = "jack1")
-j1.p # 9.974359
-#90%
-j2.p <- diversityresult(pitfall.com.matrix_order, y=NULL, index = "jack2")
-j2.p # 10.923077
-#82%
-
-#ramp jackknife; richness = 12
-j1.r <- diversityresult(ramp.com.matrix_order, y=NULL, index = "jack1")
-j1.r # 12
-#100%
-j2.r <- diversityresult(ramp.com.matrix_order, y=NULL, index = "jack2")
-j2.r # 11.070848
-#108% --> 100%
-
-#sticky jackknife; richness = 10
-j1.s <- diversityresult(sticky.com.matrix_order, y=NULL, index = "jack1")
-j1.s # 10
-#100%
-j2.s <- diversityresult(sticky.com.matrix_order, y=NULL, index = "jack2")
-j2.s # 10
-#100%
+#jar jackknife; richness = 19
+j1.j <- diversityresult(jar.com.matrix, y=NULL, index = "jack1")
+j1.j # 23.923077
+#79%
+j2.j <- diversityresult(jar.com.matrix, y=NULL, index = "jack2")
+j2.j # 23.998798
+#79%
 
 #BiodiversityR::accumcomp
-Accum.1_order <- accumcomp(com.matrix_order, y=env.matrix_order, factor='Trap', 
+Accum.1 <- accumcomp(com.matrix_ramps, y=env.matrix_ramps, factor='Trap', 
                            method='random', conditioned=FALSE, plotit=FALSE)
-Accum.1_order
+Accum.1
 
 #BiodiversityR::accumcomp.long
-accum.long1_order <- accumcomp.long(Accum.1_order, ci=NA, label.freq=5)
-head(accum.long1_order)
+accum.long1 <- accumcomp.long(Accum.1, ci=NA, label.freq=5)
+head(accum.long1)
 
 #plot
 #empty canvas
@@ -854,20 +920,20 @@ BioR.theme <- theme(
   legend.text = element_text(size = 14),
   legend.key = element_blank())
 
-order_accum <- ggplot(data=accum.long1_order, aes(x = Sites, y = Richness, ymax = UPR, ymin = LWR)) + 
+accum <- ggplot(data=accum.long1, aes(x = Sites, y = Richness, ymax = UPR, ymin = LWR)) + 
   scale_x_continuous(expand=c(0, 1), sec.axis = dup_axis(labels=NULL, name=NULL)) +
   scale_y_continuous(sec.axis = dup_axis(labels=NULL, name=NULL)) +
-  scale_color_manual(values=c("#009E73","#E69F00","#F0E442","#CC79A7"))+
+  scale_color_manual(values=c("gray","black"))+
   scale_shape_manual(values=c(19,17,15,25))+
   geom_line(aes(colour=Grouping), size=0.1) +
   geom_ribbon(aes(colour=Grouping, fill=after_scale(alpha(colour, 0.3))), 
               show.legend=FALSE, linetype = 0) + 
-  geom_point(data=subset(accum.long1_order, labelit==TRUE), 
+  geom_point(data=subset(accum.long1, labelit==TRUE), 
              aes(colour=Grouping, shape=Grouping), size=3) +
   BioR.theme +
-  labs(x = "", y = "Richness", colour = "Trap", shape = "Trap")
-order_accum
+  labs(x = "Number of samples", y = "Richness", colour = "Trap", shape = "Trap")
+accum
 
-pdf("order_accum.pdf", height=6, width=8) #height and width in inches
-order_accum
+pdf("accum curves.pdf", height=6, width=8) #height and width in inches
+accum
 dev.off()
