@@ -525,7 +525,7 @@ summary(evenmodel.d)
 AIC(evenmodel.d)
 anova(evenmodel.d) 
 
-even.emm.d<-emmeans(evenmodel,pairwise~design) 
+even.emm.d<-emmeans(evenmodel.d,pairwise~design) 
 even.emm.d
 #results: difference between hab and mit (p 0.0333)
 even.cld.d<-multcomp::cld(even.emm.d, alpha = 0.05, Letters = LETTERS)
@@ -771,7 +771,7 @@ ramps19$Trap="ramp"
 jars21$Trap="jar"
 
 #merge
-#library (plyr)
+library (plyr)
 ramps <- rbind.fill (ramps19, jars21)
 
 #calculate mean and SE richness, abundance, diversity and evenness of each trap type
