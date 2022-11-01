@@ -703,6 +703,113 @@ distances_data<-vegdist(com.matrix)
 anova(betadisper(distances_data, env.matrix$sitetype))
 #P-value = 0.01 -- cannot assume homogeneity of multivariate dispersion
 
+##
+
+#NMDS of natural versus mitigation green roof
+mit <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_pooled_mitigation%20and%20natural.csv", na.strings=NULL)
+
+#Create matrix of environmental variables    
+env.matrix_mit<-mit[c(1:3)]
+
+#create matrix of community variables
+com.matrix_mit<-mit[c(4:43)]
+
+#change to presence/absence
+com.matrix_mit[com.matrix_mit > 0] <- 1
+str(com.matrix_mit)
+rowSums(com.matrix_mit)
+
+#ordination by NMDS
+NMDS_mit<-metaMDS(com.matrix_mit, distance="bray", k=2, autotransform=TRUE, trymax=300)
+NMDS_mit
+###stress = 0.18
+stressplot(NMDS_mit)
+
+#plot
+plot(NMDS_mit, disp='sites', type="n")
+#add ellipsoids with ordiellipse
+ordiellipse(NMDS_mit, env.matrix_mit$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Mitigation")
+ordiellipse(NMDS_mit, env.matrix_mit$type, draw="polygon", col="#E69F00",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
+#add data points
+points(NMDS_mit, display="sites", select=which(env.matrix_mit$type=="Natural"),pch=19, col="#E69F00")
+points(NMDS_mit, display="sites", select=which(env.matrix_mit$type=="Mitigation"), pch=17, col="#009E73")
+#add legend
+#legend(0.5,0.5, title=NULL, pch=c(19,17), col=c("#E69F00","#009E73"), cex=1.5, legend=c("Natural", "Mitigation"))
+
+#bootstrapping and testing for differences between the groups (mitigation and natural)
+fit<-adonis(com.matrix_mit ~ type, data = env.matrix_mit, permutations = 999, method="bray")
+fit
+#P=0.08
+
+#check assumption of homogeneity of multivariate dispersion 
+#P-value greater than 0.05 means assumption has been met
+distances_data<-vegdist(com.matrix_mit)
+anova(betadisper(distances_data, env.matrix_mit$type))
+#P-value = 0.006 -- cannot assume homogeneity of multivariate dispersion
+
+#
+
+#NMDS of natural versus habitat green roof
+hab <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_pooled_habitat%20and%20natural.csv", na.strings=NULL)
+
+#Create matrix of environmental variables    
+env.matrix_hab<-hab[c(1:3)]
+
+#create matrix of community variables
+com.matrix_hab<-hab[c(4:43)]
+
+#change to presence/absence
+com.matrix_hab[com.matrix_hab > 0] <- 1
+str(com.matrix_hab)
+rowSums(com.matrix_hab)
+
+#ordination by NMDS
+NMDS_hab<-metaMDS(com.matrix_hab, distance="bray", k=2, autotransform=TRUE, trymax=300)
+NMDS_hab
+###stress = 0.18
+stressplot(NMDS_hab)
+
+plot(NMDS_hab, disp='sites', type="n")
+#add ellipsoids with ordiellipse
+ordiellipse(NMDS_hab, env.matrix_hab$type, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "Habitat")
+ordiellipse(NMDS_hab, env.matrix_hab$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
+#add data points
+points(NMDS_hab, display="sites", select=which(env.matrix_hab$type=="Natural"),pch=19, col="#009E73")
+points(NMDS_hab, display="sites", select=which(env.matrix_hab$type=="Habitat"), pch=17, col="#CC79A7")
+#add legend
+#legend(0.5,0.5, title=NULL, pch=c(19,17), col=c("#009E73","#CC79A7"), cex=1.5, legend=c("Natural", "Habitat"))
+
+#bootstrapping and testing for differences between the groups (habitat and natural)
+fit<-adonis(com.matrix_hab ~ type, data = env.matrix_hab, permutations = 999, method="bray")
+fit
+#P=0.001
+
+#check assumption of homogeneity of multivariate dispersion 
+#P-value greater than 0.05 means assumption has been met
+distances_data<-vegdist(com.matrix_hab)
+anova(betadisper(distances_data, env.matrix_hab$type))
+#P-value = 0.20 -- assumes homogeneity of multivariate dispersion
+
+#merge habitat and mitigation NMDSs into one figure
+pdf("design type NMDSs.pdf", height=6.5, width=13)
+par(mfrow=c(1,2), mar=c(4.1, 4.8, 1.5, 8.1),xpd=TRUE) 
+
+plot(NMDS_mit, disp='sites', type="n")
+title(main="A", adj = 0.02, line = -2, cex.main=1.5)
+ordiellipse(NMDS_mit, env.matrix_mit$type, draw="polygon", col="#F0E442",kind="sd", conf=0.95, label=FALSE, show.groups = "Mitigation")
+ordiellipse(NMDS_mit, env.matrix_mit$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
+points(NMDS_mit, display="sites", select=which(env.matrix_mit$type=="Natural"),pch=19, col="#009E73")
+points(NMDS_mit, display="sites", select=which(env.matrix_mit$type=="Mitigation"), pch=15, col="#F0E442")
+legend(-0.365,1.38, title=NULL, pch=c(19,15), col=c("#009E73","#F0E442"), cex=1.5, legend=c("Natural", "Mitigation"))
+
+plot(NMDS_hab, disp='sites', type="n")
+title(main="B", adj = 0.02, line = -2, cex.main=1.5)
+ordiellipse(NMDS_hab, env.matrix_hab$type, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "Habitat")
+ordiellipse(NMDS_hab, env.matrix_hab$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
+points(NMDS_hab, display="sites", select=which(env.matrix_hab$type=="Natural"),pch=19, col="#009E73")
+points(NMDS_hab, display="sites", select=which(env.matrix_hab$type=="Habitat"), pch=18, col="#CC79A7")
+legend(0.022,1.2, title=NULL, pch=c(19,18), col=c("#009E73","#CC79A7"), cex=1.5, legend=c("Natural", "Habitat"))
+dev.off()
 ###
 
 #NMDS of green roof insect community 
@@ -737,14 +844,14 @@ plot(NMDS_gr, disp='sites', type="n")
 ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#F0E442",kind="sd", conf=0.95, label=FALSE, show.groups = "Mitigation")
 ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "Habitat")
 #add data points
-points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Habitat"),pch=19, col="#CC79A7")
-points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Mitigation"), pch=17, col="#F0E442")
+points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Habitat"),pch=18, col="#CC79A7")
+points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Mitigation"), pch=15, col="#F0E442")
 #add legend
-legend(0.375,0.815, title=NULL, pch=c(19,17), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("Habitat", "Mitigation"))
-ordilabel(NMDS, display="species", select =which (include==TRUE & pollinator == TRUE), cex=0.6, col="black", fill="white")
-ordilabel(NMDS, display="species", select =which (include==TRUE & natural_enemies == TRUE), cex=0.6, col="white", fill="black")
+legend(0.375,0.815, title=NULL, pch=c(18,15), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("Habitat", "Mitigation"))
+#ordilabel(NMDS, display="species", select =which (include==TRUE & pollinator == TRUE), cex=0.6, col="black", fill="white")
+#ordilabel(NMDS, display="species", select =which (include==TRUE & natural_enemies == TRUE), cex=0.6, col="white", fill="black")
 
-#bootstrapping and testing for differences between the groups (regions)
+#bootstrapping and testing for differences between the groups (habitat v mitigation)
 fit<-adonis(com.matrix_gr ~ design, data = env.matrix_gr, permutations = 999, method="bray")
 fit
 #P=0.732
@@ -757,25 +864,25 @@ anova(betadisper(distances_data, env.matrix_gr$design))
 
 ###
 
-#merge NMDSs into one figure and print to PDF
+#merge allbugs and GR NMDSs into one figure and print to PDF
 pdf("multi-NMDS.pdf", height=6.5, width=13)
 par(mfrow=c(1,2), mar=c(4.1, 4.8, 1.5, 8.1),xpd=TRUE) 
 
 plot(NMDS, disp='sites', type="n")
 title(main="A", adj = 0.02, line = -2, cex.main=1.5)
-ordiellipse(NMDS, env.matrix$sitetype, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Greenroof")
-ordiellipse(NMDS, env.matrix$sitetype, draw="polygon", col="#E69F00",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
-points(NMDS, display="sites", select=which(env.matrix$sitetype=="Natural"),pch=19, col="#E69F00")
-points(NMDS, display="sites", select=which(env.matrix$sitetype=="Greenroof"), pch=17, col="#009E73")
-legend(0.505,1.262, title=NULL, pch=c(19,17), col=c("#E69F00","#009E73"), cex=1.5, legend=c("Natural", "Greenroof"))
+ordiellipse(NMDS, env.matrix$sitetype, draw="polygon", col="#E69F00",kind="sd", conf=0.95, label=FALSE, show.groups = "Greenroof")
+ordiellipse(NMDS, env.matrix$sitetype, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
+points(NMDS, display="sites", select=which(env.matrix$sitetype=="Natural"),pch=19, col="#009E73")
+points(NMDS, display="sites", select=which(env.matrix$sitetype=="Greenroof"), pch=17, col="#E69F00")
+legend(-0.25,1.21, title=NULL, pch=c(19,17), col=c("#009E73","#E69F00"), cex=1.5, legend=c("Natural", "Greenroof"))
 
 plot(NMDS_gr, disp='sites', type="n")
 title(main="B", adj = 0.02, line = -2, cex.main=1.5)
 ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#F0E442",kind="sd", conf=0.95, label=FALSE, show.groups = "Mitigation")
 ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "Habitat")
-points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Habitat"),pch=19, col="#CC79A7")
-points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Mitigation"), pch=17, col="#F0E442")
-legend(-0.145,1.295, title=NULL, pch=c(19,17), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("Habitat", "Mitigation"))
+points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Habitat"),pch=18, col="#CC79A7")
+points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Mitigation"), pch=15, col="#F0E442")
+legend(0.45,1.295, title=NULL, pch=c(18,15), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("Habitat", "Mitigation"))
 dev.off()
 
 ###
