@@ -647,6 +647,9 @@ library (vegan)
 #bring in data pooled by date-site
 allbugs_pooled <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_2019%20and%202021_pooled.csv", na.strings = NULL)
 
+#bring in beneficial insects taxa info 
+taxa <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_taxa.csv", na.strings=NULL)
+
 #Create matrix of environmental variables    
 env.matrix<-allbugs_pooled[c(1:3)]
 
@@ -664,6 +667,14 @@ NMDS
 ###stress = 0.20
 stressplot(NMDS)
 
+#what taxa to display using "taxa"
+pollinator<-as.vector(t(taxa[1,]))
+pollinator<-pollinator[-1]
+natural_enemies<-as.vector(t(taxa[2,]))
+natural_enemies<-natural_enemies[-1]
+include<-as.vector(t(taxa[3,]))
+include<-include[-1]
+
 #plot NMDS 
 #might need to change colors
 #8 x 13
@@ -677,6 +688,9 @@ points(NMDS, display="sites", select=which(env.matrix$sitetype=="Natural"),pch=1
 points(NMDS, display="sites", select=which(env.matrix$sitetype=="Greenroof"), pch=17, col="#009E73")
 #add legend
 legend(0.92,0.68, title=NULL, pch=c(19,17), col=c("#E69F00","#009E73"), cex=1.5, legend=c("Natural", "Greenroof"))
+#add insect taxa as text
+ordilabel(NMDS, display="species", select =which (include==TRUE & pollinator == TRUE), cex=0.6, col="black", fill="white")
+ordilabel(NMDS, display="species", select =which (include==TRUE & natural_enemies == TRUE), cex=0.6, col="white", fill="black")
 
 #bootstrapping and testing for differences between the groups (regions)
 fit<-adonis(com.matrix ~ sitetype, data = env.matrix, permutations = 999, method="bray")
@@ -727,6 +741,8 @@ points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Habitat"),p
 points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Mitigation"), pch=17, col="#F0E442")
 #add legend
 legend(0.375,0.815, title=NULL, pch=c(19,17), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("Habitat", "Mitigation"))
+ordilabel(NMDS, display="species", select =which (include==TRUE & pollinator == TRUE), cex=0.6, col="black", fill="white")
+ordilabel(NMDS, display="species", select =which (include==TRUE & natural_enemies == TRUE), cex=0.6, col="white", fill="black")
 
 #bootstrapping and testing for differences between the groups (regions)
 fit<-adonis(com.matrix_gr ~ design, data = env.matrix_gr, permutations = 999, method="bray")
