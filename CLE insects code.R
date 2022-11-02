@@ -813,7 +813,7 @@ dev.off()
 ###
 
 #NMDS of green roof insect community 
-#library (vegan)
+library (vegan)
 
 #bring in data pooled by date-site
 greenroofbugs_pooled <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/greenroofbugs_2019%20and%202021_pooled.csv", na.strings = NULL)
@@ -861,6 +861,38 @@ fit
 distances_data<-vegdist(com.matrix_gr)
 anova(betadisper(distances_data, env.matrix_gr$design))
 #P-value = 0.2024 -- assumes homogeneity of multivariate dispersion
+
+#plot greenroof sites
+plot(NMDS_gr, disp='sites', type="n")
+#title(main="Arthropod community composition by site type", cex.main=1.5)
+#add ellipsoids with ordiellipse
+ordiellipse(NMDS_gr, env.matrix_gr$Site, draw="polygon", col="#F0E442",kind="sd", conf=0.95, label=FALSE, show.groups = "EWB")
+ordiellipse(NMDS_gr, env.matrix_gr$Site, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "WSC")
+ordiellipse(NMDS_gr, env.matrix_gr$Site, draw="polygon", col="blue",kind="sd", conf=0.95, label=FALSE, show.groups = "HDB")
+ordiellipse(NMDS_gr, env.matrix_gr$Site, draw="polygon", col="grey",kind="sd", conf=0.95, label=FALSE, show.groups = "SNC")
+#add data points
+points(NMDS_gr, display="sites", select=which(env.matrix_gr$Site=="EWB"),pch=18, col="#F0E442")
+points(NMDS_gr, display="sites", select=which(env.matrix_gr$Site=="WSC"), pch=15, col="#CC79A7")
+points(NMDS_gr, display="sites", select=which(env.matrix_gr$Site=="HDB"),pch=19, col="blue")
+points(NMDS_gr, display="sites", select=which(env.matrix_gr$Site=="SNC"), pch=20, col="grey")
+#add legend
+legend(0.375,0.815, title=NULL, pch=c(18,15, 19, 20), col=c("#F0E442", "#CC79A7", "blue", "grey"), cex=1.5, legend=c("EWB", "WSC", "HDB", "SNC"))
+#ordilabel(NMDS, display="species", select =which (include==TRUE & pollinator == TRUE), cex=0.6, col="black", fill="white")
+#ordilabel(NMDS, display="species", select =which (include==TRUE & natural_enemies == TRUE), cex=0.6, col="white", fill="black")
+
+#bootstrapping and testing for differences between the groups (habitat v mitigation)
+fit<-adonis(com.matrix_gr ~ Site, data = env.matrix_gr, permutations = 999, method="bray")
+fit
+#P > 0.05  ~0.08
+
+library (pairwiseAdonis)
+pairwise.adonis(com.matrix_gr, env.matrix_gr$Site)
+
+#check assumption of homogeneity of multivariate dispersion 
+#P-value greater than 0.05 means assumption has been met
+distances_data<-vegdist(com.matrix_gr)
+anova(betadisper(distances_data, env.matrix_gr$Site))
+#P-value = 0.5663 -- assumes homogeneity of multivariate dispersion
 
 ###
 
