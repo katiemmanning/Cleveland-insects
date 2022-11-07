@@ -9,6 +9,10 @@ sticky19 <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-
 summary(sticky19)
 str(sticky19)
 
+bowls19$Trap="bowl"
+ramps19$Trap="ramp"
+sticky19$Trap="sticky"
+
 #combine data tables 
 ##rbind.fill instead of rbind let's us have datasets with different columns (but then you'd have to get rid of NAs)
 library (plyr)
@@ -65,6 +69,10 @@ str(jars21)
 sticky21 <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Insect%20ID%202021%20-%20Sticky%20card.csv",na.strings = NULL)
 summary(sticky21)
 str(sticky21)
+
+bowls21$Trap="bowl"
+jars21$Trap="jar"
+sticky21$Trap="sticky"
 
 #combine data tables 
 ##rbind.fill instead of rbind let's us have datasets with different columns (but then you'd have to get rid of NAs)
@@ -131,14 +139,14 @@ library (jtools)
 library (interactions)
 
 ##richness linear model
-richmodel <- lm(richness~Date + Site + sitetype, data=allbugs)  #AIC = 1929
+richmodel <- lm(richness~Date + Site + sitetype + Trap, data=allbugs)  #AIC = 1726
 summary(richmodel)
 AIC(richmodel)
 anova(richmodel) 
 
 rich.emm<-emmeans(richmodel,pairwise~sitetype) #comparing natural vs GR
 rich.emm
-#results: difference between natural and green roofs (p=0.0006)
+#results: difference between natural and green roofs (p < 0.0001)
 rich.cld<-multcomp::cld(rich.emm, alpha = 0.05, Letters = LETTERS)
 rich.cld 
 
@@ -147,6 +155,12 @@ rich.emm.s
 #results: 
 rich.cld.s<-multcomp::cld(rich.emm.s, alpha = 0.05, Letters = LETTERS)
 rich.cld.s 
+
+rich.emm.t<-emmeans(richmodel,pairwise~Trap) 
+rich.emm.t
+#results: significant difference between all trap types 
+rich.cld.t<-multcomp::cld(rich.emm.t, alpha = 0.05, Letters = LETTERS)
+rich.cld.t 
 
 #check assumptions
 dotchart(allbugs$richness, main = "richness") # way to visualize outliers
@@ -163,7 +177,7 @@ plot(richmodel) # check distribution of residuals
 qqnorm(resid(richmodel))
 qqline(resid(richmodel))
 
-plot(simulateResiduals(richmodel)) # another way to check for normailty and homogeneity of variance
+plot(simulateResiduals(richmodel)) # another way to check for normality and homogeneity of variance
 #KS test: p = 0.95682
 #dispersion test: p = 0.616
 #outlier test: p = 0.27415
@@ -178,7 +192,7 @@ influenceIndexPlot(richmodel, vars = c("Cook"), id = list(n = 3))
 #
 
 ##abundance linear model
-abunmodel <- lm(abundance~Date + Site + sitetype, data=allbugs)  #AIC = 6319
+abunmodel <- lm(abundance~Date + Site + sitetype + Trap, data=allbugs)  #AIC = 6307
 #abunmodel <- glm(abundance~Date + Site + sitetype, data=allbugs, family = negative.binomial(2))  #AIC = 
 summary(abunmodel)
 AIC(abunmodel)
@@ -186,7 +200,7 @@ anova(abunmodel)
 
 abun.emm<-emmeans(abunmodel,pairwise~sitetype) 
 abun.emm
-#results: difference between natural and green roofs (p=0.0492)
+#results: difference between natural and green roofs (p=0.0289)
 abun.cld<-multcomp::cld(abun.emm, alpha = 0.05, Letters = LETTERS)
 abun.cld 
 
@@ -195,6 +209,12 @@ abun.emm.s
 #results:
 abun.cld.s<-multcomp::cld(abun.emm.s, alpha = 0.05, Letters = LETTERS)
 abun.cld.s 
+
+abun.emm.t<-emmeans(abunmodel,pairwise~Trap) 
+abun.emm.t
+#results: same for all except difference between bowl-sticky and jar-sticky
+abun.cld.t<-multcomp::cld(abun.emm.t, alpha = 0.05, Letters = LETTERS)
+abun.cld.t 
 
 #check assumptions
 dotchart(allbugs$abundance, main = "abundance") # way to visualize outliers
@@ -227,14 +247,14 @@ influenceIndexPlot(abunmodel, vars = c("Cook"), id = list(n = 3))
 #
 
 ##diversity linear model
-divmodel <- lm(diversity~Date + Site + sitetype, data=allbugs)  #AIC = 526
+divmodel <- lm(diversity~Date + Site + sitetype + Trap, data=allbugs)  #AIC = 487
 summary(divmodel)
 AIC(divmodel)
 anova(divmodel)
 
 div.emm<-emmeans(divmodel,pairwise~sitetype) 
 div.emm
-#results: no difference between natural and green roofs (p=0.6176)
+#results: no difference between natural and green roofs (p=0.7749)
 div.cld<-multcomp::cld(div.emm, alpha = 0.05, Letters = LETTERS)
 div.cld 
 
@@ -243,6 +263,12 @@ div.emm.s
 #results: 
 div.cld.s<-multcomp::cld(div.emm.s, alpha = 0.05, Letters = LETTERS)
 div.cld.s 
+
+div.emm.t<-emmeans(divmodel,pairwise~Trap) 
+div.emm.t
+#results: difference = bowl-jar, bowl-ramp, jar-ramp, jar-sticky... similar = bowl-sticky & ramp-sticky
+div.cld.t<-multcomp::cld(div.emm.t, alpha = 0.05, Letters = LETTERS)
+div.cld.t 
 
 #check assumptions
 dotchart(allbugs$diversity, main = "diversity") # way to visualize outliers
@@ -274,7 +300,7 @@ influenceIndexPlot(divmodel, vars = c("Cook"), id = list(n = 3))
 #
 
 ##evenness linear mixed effects model
-evenmodel <- lm(evenness~Date + Site + sitetype, data=allbugs)  #AIC = -69
+evenmodel <- lm(evenness~Date + Site + sitetype + Trap, data=allbugs)  #AIC = -141
 summary(evenmodel)
 AIC(evenmodel)
 anova(evenmodel) 
@@ -290,6 +316,12 @@ even.emm.s
 #results: 
 even.cld.s<-multcomp::cld(even.emm.s, alpha = 0.05, Letters = LETTERS)
 even.cld.s 
+
+even.emm.t<-emmeans(evenmodel,pairwise~Trap) 
+even.emm.t
+#results: sticky sig diff than all, everything else no difference
+even.cld.t<-multcomp::cld(even.emm.t, alpha = 0.05, Letters = LETTERS)
+even.cld.t 
 
 #check assumptions
 dotchart(allbugs$evenness, main = "evenness") # way to visualize outliers
@@ -309,7 +341,7 @@ qqline(resid(evenmodel))
 plot(simulateResiduals(evenmodel)) # another way to check for normailty and homogeneity of variance
 #KS test: p = 0.12149
 #dispersion test: p = 0.632
-#outlier test: p = 1
+#outlier test: p =  *SIG*
 #no significant problems detected 
 
 densityPlot(rstudent(evenmodel)) # check density estimate of the distribution of residuals
@@ -396,16 +428,22 @@ greenroofbugs <- rbind.fill (greenroofbugs19, greenroofbugs21)
 str (greenroofbugs)
 
 ##richness linear model
-richmodel.d <- lm(richness~Date + Site + design, data=greenroofbugs)  #AIC = 1035
+richmodel.d <- lm(richness~Date + Site + design + Trap, data=greenroofbugs)  #AIC = 927
 summary(richmodel.d)
 AIC(richmodel.d)
 anova(richmodel.d) 
 
 rich.emm.d<-emmeans(richmodel.d,pairwise~design) #comparing habitat vs mitigation
 rich.emm.d
-#results: no difference between hab and mit (p=0.4988)
+#results: no difference between hab and mit (p=0.1631)
 rich.cld.d<-multcomp::cld(rich.emm.d, alpha = 0.05, Letters = LETTERS)
 rich.cld.d 
+
+rich.emm.t<-emmeans(richmodel.d,pairwise~Trap) #comparing habitat vs mitigation
+rich.emm.t
+#results: sig diff between all except bowl-ramp
+rich.cld.t<-multcomp::cld(rich.emm.t, alpha = 0.05, Letters = LETTERS)
+rich.cld.t 
 
 #check assumptions
 dotchart(greenroofbugs$richness, main = "richness") # way to visualize outliers
@@ -437,16 +475,22 @@ influenceIndexPlot(richmodel.d, vars = c("Cook"), id = list(n = 3))
 #
 
 ##abundance linear model
-abunmodel.d <- lm(abundance~Date + Site + design, data=greenroofbugs)  #AIC = 2786
+abunmodel.d <- lm(abundance~Date + Site + design + Trap, data=greenroofbugs)  #AIC = 2777
 summary(abunmodel.d)
 AIC(abunmodel.d)
 anova(abunmodel.d)
 
 abun.emm.d<-emmeans(abunmodel.d,pairwise~design) 
 abun.emm.d
-#results: difference between habitat and mitigation (p=0.0116)
+#results: difference between habitat and mitigation (p=0.0056)
 abun.cld.d<-multcomp::cld(abun.emm.d, alpha = 0.05, Letters = LETTERS)
 abun.cld.d 
+
+abun.emm.t<-emmeans(abunmodel.d,pairwise~Trap) 
+abun.emm.t
+#results: no sig diff btw any except bowl-sticky
+abun.cld.t<-multcomp::cld(abun.emm.t, alpha = 0.05, Letters = LETTERS)
+abun.cld.t 
 
 #check assumptions
 dotchart(greenroofbugs$abundance, main = "abundance") # way to visualize outliers
@@ -479,16 +523,22 @@ influenceIndexPlot(abunmodel.d, vars = c("Cook"), id = list(n = 3))
 #
 
 ##diversity linear model
-divmodel.d <- lm(diversity~Date + Site + design, data=greenroofbugs)  #AIC = 303
+divmodel.d <- lm(diversity~Date + Site + design + Trap, data=greenroofbugs)  #AIC = 248
 summary(divmodel.d)
 AIC(divmodel.d)
 anova(divmodel.d)
 
 div.emm.d<-emmeans(divmodel.d,pairwise~design) 
 div.emm.d
-#results: no difference between hab and mit (p=0.0557)
+#results: no difference between hab and mit (p=0.0686)
 div.cld.d<-multcomp::cld(div.emm.d, alpha = 0.05, Letters = LETTERS)
 div.cld.d 
+
+div.emm.t<-emmeans(divmodel.d,pairwise~Trap) 
+div.emm.t
+#results: sig diff between all except bowl-jar & ramp-sticky
+div.cld.t<-multcomp::cld(div.emm.t, alpha = 0.05, Letters = LETTERS)
+div.cld.t 
 
 #check assumptions
 dotchart(greenroofbugs$diversity, main = "diversity") # way to visualize outliers
@@ -520,16 +570,22 @@ influenceIndexPlot(divmodel.d, vars = c("Cook"), id = list(n = 3))
 #
 
 ##evenness linear mixed effects model
-evenmodel.d <- lm(evenness~Date + Site + design, data=greenroofbugs)  #AIC = -51
+evenmodel.d <- lm(evenness~Date + Site + design + Trap , data=greenroofbugs)  #AIC = -54
 summary(evenmodel.d)
 AIC(evenmodel.d)
 anova(evenmodel.d) 
 
 even.emm.d<-emmeans(evenmodel.d,pairwise~design) 
 even.emm.d
-#results: difference between hab and mit (p 0.0333)
+#results: difference between hab and mit (p 0.0273)
 even.cld.d<-multcomp::cld(even.emm.d, alpha = 0.05, Letters = LETTERS)
 even.cld.d
+
+even.emm.t<-emmeans(evenmodel.d,pairwise~Trap) 
+even.emm.t
+#results: no sig diff between any except bowl-sticky
+even.cld.t<-multcomp::cld(even.emm.t, alpha = 0.05, Letters = LETTERS)
+even.cld.t
 
 #check assumptions
 dotchart(greenroofbugs$evenness, main = "evenness") # way to visualize outliers
@@ -548,7 +604,7 @@ qqline(resid(evenmodel.d))
 
 plot(simulateResiduals(evenmodel.d)) # another way to check for normailty and homogeneity of variance
 #KS test: p = SIG
-#dispersion test: p = 0.704
+#dispersion test: p = 0.528
 #outlier test: p = 0.07826
 #no significant problems detected 
 
