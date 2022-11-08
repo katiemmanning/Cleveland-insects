@@ -1158,32 +1158,32 @@ P <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects
 NE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/natural%20enemies_2019%20and%202021.csv", na.strings = NULL)
 
 #To obtain richness counts
-P.rowsums <- rowSums(P[,4:6]>0)
+P.rowsums <- rowSums(P[,5:7]>0)
 P$richness <- P.rowsums
 
-NE.rowsums <- rowSums(NE[,4:13]>0)
+NE.rowsums <- rowSums(NE[,5:14]>0)
 NE$richness <- NE.rowsums
 
 #To obtain abundance counts
-P.abun <- rowSums(P[,4:6])
+P.abun <- rowSums(P[,5:7])
 P$abundance <- P.abun
 
-NE.abun <- rowSums(NE[,4:13])
+NE.abun <- rowSums(NE[,5:14])
 NE$abundance <- NE.abun
 
-library(vegan)
+#library(vegan)
 #calculate Shannon diversity
-P.diversity <-diversity(P[,4:6])
+P.diversity <-diversity(P[,5:7])
 P$diversity <-P.diversity
 
-NE.diversity <-diversity(NE[,4:13])
+NE.diversity <-diversity(NE[,5:14])
 NE$diversity <-NE.diversity
 
 #calculate Evenness
-P.evenness <-P.diversity/log(specnumber(P[,4:6]))
+P.evenness <-P.diversity/log(specnumber(P[,5:7]))
 P$evenness <- P.evenness
 
-NE.evenness <-NE.diversity/log(specnumber(NE[,4:13]))
+NE.evenness <-NE.diversity/log(specnumber(NE[,5:14]))
 NE$evenness <- NE.evenness
 
 summary(P)
@@ -1191,19 +1191,15 @@ str(P)
 summary(NE)
 str(NE)
 
-####PUT TRAPS ON DATA --> reimport
-##start editting code here
-#run through everything with pollinators, then again with NE
-
 ##Pollinator richness linear model
-richmodel <- lm(richness~Date + Site + sitetype + Trap, data=P)  #AIC = 1726
-summary(richmodel)
-AIC(richmodel)
-anova(richmodel) 
+richmodel.p <- lm(richness~Date + Site + sitetype + Trap, data=P)  #AIC = 764
+summary(richmodel.p)
+AIC(richmodel.p)
+anova(richmodel.p) 
 
-rich.emm<-emmeans(richmodel,pairwise~sitetype) #comparing natural vs GR
+rich.emm<-emmeans(richmodel.p,pairwise~sitetype) #comparing natural vs GR
 rich.emm
-#results: difference between natural and green roofs (p < 0.0001)
+#results: difference between natural (higher) and green roofs (p < 0.0001)
 rich.cld<-multcomp::cld(rich.emm, alpha = 0.05, Letters = LETTERS)
 rich.cld 
 
@@ -1215,204 +1211,209 @@ rich.cld.s
 
 rich.emm.t<-emmeans(richmodel,pairwise~Trap) 
 rich.emm.t
-#results: significant difference between all trap types 
+#results: significant difference between all trap types, except ramp-sticky -- bowls had highest richness, then ramps
 rich.cld.t<-multcomp::cld(rich.emm.t, alpha = 0.05, Letters = LETTERS)
 rich.cld.t 
 
 #check assumptions
-dotchart(allbugs$richness, main = "richness") # way to visualize outliers
+dotchart(P$richness, main = "richness") # way to visualize outliers
 
-with(allbugs, ad.test(richness)) #Anderson-darling test for normality (good for small sample sizes), low p-value means assumption is violated
-#p-value = 1.091e-08
+with(P, ad.test(richness)) #Anderson-darling test for normality (good for small sample sizes), low p-value means assumption is violated
+#p-value < 2.2e-16
 
-with(allbugs, bartlett.test(richness ~ sitetype)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
-#p-value = 0.1285
+with(P, bartlett.test(richness ~ sitetype)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
+#p-value = 0.001298
 
-plot(richmodel) # check distribution of residuals
-
-# check normality with these figures, are there outliers at either end
-qqnorm(resid(richmodel))
-qqline(resid(richmodel))
-
-plot(simulateResiduals(richmodel)) # another way to check for normality and homogeneity of variance
-#KS test: p = 0.95682
-#dispersion test: p = 0.616
-#outlier test: p = 0.27415
-#no significant problems detected 
-
-densityPlot(rstudent(richmodel)) # check density estimate of the distribution of residuals
-
-# check for outliers influencing the data
-outlierTest(richmodel)
-influenceIndexPlot(richmodel, vars = c("Cook"), id = list(n = 3))
-
-#
-
-##abundance linear model
-abunmodel <- lm(abundance~Date + Site + sitetype + Trap, data=allbugs)  #AIC = 6307
-#abunmodel <- glm(abundance~Date + Site + sitetype, data=allbugs, family = negative.binomial(2))  #AIC = 
-summary(abunmodel)
-AIC(abunmodel)
-anova(abunmodel)
-
-abun.emm<-emmeans(abunmodel,pairwise~sitetype) 
-abun.emm
-#results: difference between natural and green roofs (p=0.0289)
-abun.cld<-multcomp::cld(abun.emm, alpha = 0.05, Letters = LETTERS)
-abun.cld 
-
-abun.emm.s<-emmeans(abunmodel,pairwise~Site) 
-abun.emm.s
-#results:
-abun.cld.s<-multcomp::cld(abun.emm.s, alpha = 0.05, Letters = LETTERS)
-abun.cld.s 
-
-abun.emm.t<-emmeans(abunmodel,pairwise~Trap) 
-abun.emm.t
-#results: same for all except difference between bowl-sticky and jar-sticky
-abun.cld.t<-multcomp::cld(abun.emm.t, alpha = 0.05, Letters = LETTERS)
-abun.cld.t 
-
-#check assumptions
-dotchart(allbugs$abundance, main = "abundance") # way to visualize outliers
-#clustered towards 0 --- outlier of 4800 and 6800
-
-with(allbugs, ad.test(abundance)) #Anderson-darling test for normality (good for small sample sizes), low p-value means assumption is violated
-#p-value = < 2.2e-16
-
-with(allbugs, bartlett.test(abundance ~ sitetype)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
-#p-value = < 2.2e-16
-
-plot(abunmodel) # check distribution of residuals
+plot(richmodel.p) # check distribution of residuals
 
 # check normality with these figures, are there outliers at either end
-qqnorm(resid(abunmodel))
-qqline(resid(abunmodel))
+qqnorm(resid(richmodel.p))
+qqline(resid(richmodel.p))
 
-plot(simulateResiduals(abunmodel)) # another way to check for normality and homogeneity of variance
-#KS test: p = 0  *sig deviation
+plot(simulateResiduals(richmodel.p)) # another way to check for normality and homogeneity of variance
+#KS test: p = 0.003 SIG 
 #dispersion test: p = 
 #outlier test: p = 
 #no significant problems detected 
 
-densityPlot(rstudent(abunmodel)) # check density estimate of the distribution of residuals
+densityPlot(rstudent(richmodel.p)) # check density estimate of the distribution of residuals
 
 # check for outliers influencing the data
-outlierTest(abunmodel)
-influenceIndexPlot(abunmodel, vars = c("Cook"), id = list(n = 3))
+outlierTest(richmodel.p)
+influenceIndexPlot(richmodel.p, vars = c("Cook"), id = list(n = 3))
 
 #
 
-##diversity linear model
-divmodel <- lm(diversity~Date + Site + sitetype + Trap, data=allbugs)  #AIC = 487
-summary(divmodel)
-AIC(divmodel)
-anova(divmodel)
+##Pollinator abundance linear model
+abunmodel.p <- lm(abundance~Date + Site + sitetype + Trap, data=P)  #AIC = 2578
+summary(abunmodel.p)
+AIC(abunmodel.p)
+anova(abunmodel.p)
 
-div.emm<-emmeans(divmodel,pairwise~sitetype) 
+abun.emm<-emmeans(abunmodel.p,pairwise~sitetype) 
+abun.emm
+#results: difference between natural (higher) and green roofs (p=0.0006)
+abun.cld<-multcomp::cld(abun.emm, alpha = 0.05, Letters = LETTERS)
+abun.cld 
+
+abun.emm.s<-emmeans(abunmodel.p,pairwise~Site) 
+abun.emm.s
+#results: no diff btw most
+abun.cld.s<-multcomp::cld(abun.emm.s, alpha = 0.05, Letters = LETTERS)
+abun.cld.s 
+
+abun.emm.t<-emmeans(abunmodel.p,pairwise~Trap) 
+abun.emm.t
+#results: bowl sig diff from all trap types (bowls caught highest abun, then ramps) - no diff btw rest
+abun.cld.t<-multcomp::cld(abun.emm.t, alpha = 0.05, Letters = LETTERS)
+abun.cld.t 
+
+#check assumptions
+dotchart(P$abundance, main = "abundance") # way to visualize outliers
+#clustered towards 0 --- outlier of 4800 and 6800
+
+with(P, ad.test(abundance)) #Anderson-darling test for normality (good for small sample sizes), low p-value means assumption is violated
+#p-value = < 2.2e-16
+
+with(P, bartlett.test(abundance ~ sitetype)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
+#p-value = < 2.2e-16
+
+plot(abunmodel.p) # check distribution of residuals
+
+# check normality with these figures, are there outliers at either end
+qqnorm(resid(abunmodel.p))
+qqline(resid(abunmodel.p))
+
+plot(simulateResiduals(abunmodel.p)) # another way to check for normality and homogeneity of variance
+#KS test: p = 0  *sig deviation
+#dispersion test: p = 
+#outlier test: p = 0.007 *SIG
+#no significant problems detected 
+
+densityPlot(rstudent(abunmodel.p)) # check density estimate of the distribution of residuals
+
+# check for outliers influencing the data
+outlierTest(abunmodel.p)
+influenceIndexPlot(abunmodel.p, vars = c("Cook"), id = list(n = 3))
+
+#
+
+##Pollinator diversity linear model
+divmodel.p <- lm(diversity~Date + Site + sitetype + Trap, data=P)  #AIC = -165
+summary(divmodel.p)
+AIC(divmodel.p)
+anova(divmodel.p)
+
+div.emm<-emmeans(divmodel.p,pairwise~sitetype) 
 div.emm
-#results: no difference between natural and green roofs (p=0.7749)
+#results: difference between natural and green roofs (p=0.0037) - higher in natural
 div.cld<-multcomp::cld(div.emm, alpha = 0.05, Letters = LETTERS)
 div.cld 
 
-div.emm.s<-emmeans(divmodel,pairwise~Site) 
+div.emm.s<-emmeans(divmodel.p,pairwise~Site) 
 div.emm.s
-#results: 
+#results: no diff btw most
 div.cld.s<-multcomp::cld(div.emm.s, alpha = 0.05, Letters = LETTERS)
 div.cld.s 
 
-div.emm.t<-emmeans(divmodel,pairwise~Trap) 
+div.emm.t<-emmeans(divmodel.p,pairwise~Trap) 
 div.emm.t
-#results: difference = bowl-jar, bowl-ramp, jar-ramp, jar-sticky... similar = bowl-sticky & ramp-sticky
+#results: bowl sig diff from all trap types (bowls caught highest div, then ramps) - no diff btw rest
 div.cld.t<-multcomp::cld(div.emm.t, alpha = 0.05, Letters = LETTERS)
 div.cld.t 
 
 #check assumptions
-dotchart(allbugs$diversity, main = "diversity") # way to visualize outliers
+dotchart(P$diversity, main = "diversity") # way to visualize outliers
 
-with(allbugs, ad.test(diversity)) #Anderson-darling test for normality (good for small sample sizes), low p-value means assumption is violated
-#p-value = 4.764e-08
+with(P, ad.test(diversity)) #Anderson-darling test for normality (good for small sample sizes), low p-value means assumption is violated
+#p-value < 2.2e-16
 
-with(allbugs, bartlett.test(diversity ~ sitetype)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
-#p-value = 0.01665
+with(P, bartlett.test(diversity ~ sitetype)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
+#p-value = 3.63e-07
 
-plot(divmodel) # check distribution of residuals
+plot(divmodel.p) # check distribution of residuals
 
 # check normality with these figures, are there outliers at either end
-qqnorm(resid(divmodel))
-qqline(resid(divmodel))
+qqnorm(resid(divmodel.p))
+qqline(resid(divmodel.p))
 
-plot(simulateResiduals(divmodel)) # another way to check for normailty and homogeneity of variance
-#KS test: p = 0.05355
+plot(simulateResiduals(divmodel.p)) # another way to check for normailty and homogeneity of variance
+#KS test: p = 0 *SIG
 #dispersion test: p = 0.616
-#outlier test: p = 0.7801
+#outlier test: p = 5e-05 *SIG
 #no significant problems detected  
 
-densityPlot(rstudent(divmodel)) # check density estimate of the distribution of residuals
+densityPlot(rstudent(divmodel.p)) # check density estimate of the distribution of residuals
 
 # check for outliers influencing the data
-outlierTest(divmodel)
-influenceIndexPlot(divmodel, vars = c("Cook"), id = list(n = 3))
+outlierTest(divmodel.p)
+influenceIndexPlot(divmodel.p, vars = c("Cook"), id = list(n = 3))
 
 #
 
-##evenness linear mixed effects model
-evenmodel <- lm(evenness~Date + Site + sitetype + Trap, data=allbugs)  #AIC = -141
-summary(evenmodel)
-AIC(evenmodel)
-anova(evenmodel) 
+##Pollinator evenness linear model
+evenmodel.p <- lm(evenness~Date + Site + sitetype + Trap, data=P)  #AIC = 68
+summary(evenmodel.p)
+AIC(evenmodel.p)
+anova(evenmodel.p) 
 
-even.emm<-emmeans(evenmodel,pairwise~sitetype) 
+even.emm<-emmeans(evenmodel.p,pairwise~sitetype) 
 even.emm
-#results: difference between natural and green roofs (p < 0.0001)
+#results: difference between natural (greater) and green roofs (p = 0.0068)
 even.cld<-multcomp::cld(even.emm, alpha = 0.05, Letters = LETTERS)
 even.cld
 
-even.emm.s<-emmeans(evenmodel,pairwise~Site) 
+even.emm.s<-emmeans(evenmodel.p,pairwise~Site) 
 even.emm.s
-#results: 
+#results: no diff btw most 
 even.cld.s<-multcomp::cld(even.emm.s, alpha = 0.05, Letters = LETTERS)
 even.cld.s 
 
-even.emm.t<-emmeans(evenmodel,pairwise~Trap) 
+even.emm.t<-emmeans(evenmodel.p,pairwise~Trap) 
 even.emm.t
-#results: sticky sig diff than all, everything else no difference
+#results: bowl sig diff from all trap types (bowls most even, then ramps) - no diff btw rest
 even.cld.t<-multcomp::cld(even.emm.t, alpha = 0.05, Letters = LETTERS)
 even.cld.t 
 
 #check assumptions
-dotchart(allbugs$evenness, main = "evenness") # way to visualize outliers
+dotchart(P$evenness, main = "evenness") # way to visualize outliers
 
-with(allbugs, ad.test(evenness)) #Anderson-darling test for normality (good for small sample sizes), low p-value means assumption is violated
-#p-value = 5.155e-11
+with(P, ad.test(evenness)) #Anderson-darling test for normality (good for small sample sizes), low p-value means assumption is violated
+#p-value < 2.2e-16
 
-with(allbugs, bartlett.test(evenness ~ sitetype)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
-#p-value = 0.08879
+with(P, bartlett.test(evenness ~ sitetype)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
+#p-value = 0.0003803
 
-plot(evenmodel) # check distribution of residuals
+plot(evenmodel.p) # check distribution of residuals
 
 # check normality with these figures, are there outliers at either end
-qqnorm(resid(evenmodel))
-qqline(resid(evenmodel))
+qqnorm(resid(evenmodel.p))
+qqline(resid(evenmodel.p))
 
-plot(simulateResiduals(evenmodel)) # another way to check for normailty and homogeneity of variance
-#KS test: p = 0.12149
-#dispersion test: p = 0.632
-#outlier test: p =  *SIG*
+plot(simulateResiduals(evenmodel.p)) # another way to check for normailty and homogeneity of variance
+#KS test: p = 0 *SIG
+#dispersion test: p = 
+#outlier test: p =  
 #no significant problems detected 
 
-densityPlot(rstudent(evenmodel)) # check density estimate of the distribution of residuals
+densityPlot(rstudent(evenmodel.p)) # check density estimate of the distribution of residuals
 
 # check for outliers influencing the data
-outlierTest(evenmodel)
-influenceIndexPlot(evenmodel, vars = c("Cook"), id = list(n = 3))
+outlierTest(evenmodel.p)
+influenceIndexPlot(evenmodel.p, vars = c("Cook"), id = list(n = 3))
 
-#######
+#####
+
+## START EDITING
+
+
 #ggplot box plots
 library (ggplot2)
 
+#Pollinators
+
 #site richness by site type
-richness.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = richness, fill=Site))+
+richness.plot.p<-ggplot(P, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = richness, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -1422,7 +1423,7 @@ richness.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Gree
   scale_fill_brewer(palette="Paired",name="Sites:",
                     breaks=c("BFB", "DGM", "SSH", "EWB", "WSC", "HDB", "SNC"),
                     labels=c("Bedford barren","Dusty goldenrod meadow", "Slate shale hill", "Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
-richness.plot
+richness.plot.p
 
 #site abundance by site type
 abundance.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = abundance, fill=Site))+
