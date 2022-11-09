@@ -1191,6 +1191,8 @@ str(P)
 summary(NE)
 str(NE)
 
+library (emmeans) #for pairwise comparisons
+
 ##Pollinator richness linear model
 richmodel.p <- lm(richness~Date + Site + sitetype + Trap, data=P)  #AIC = 764
 summary(richmodel.p)
