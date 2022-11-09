@@ -1171,7 +1171,7 @@ P$abundance <- P.abun
 NE.abun <- rowSums(NE[,5:14])
 NE$abundance <- NE.abun
 
-#library(vegan)
+library(vegan)
 #calculate Shannon diversity
 P.diversity <-diversity(P[,5:7])
 P$diversity <-P.diversity
@@ -1693,10 +1693,9 @@ influenceIndexPlot(evenmodel.n, vars = c("Cook"), id = list(n = 3))
 library (ggplot2)
 
 #Natural enemies
-#EDIT FROM HER
 
 #site richness by site type
-richness.plot.n<-ggplot(NE,#s(x = factor(sitetype,level = c("Natural","Greenroof")), y = richness, fill=Site))+
+richness.plot.n<-ggplot(NE,aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = richness, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -1706,10 +1705,10 @@ richness.plot.n<-ggplot(NE,#s(x = factor(sitetype,level = c("Natural","Greenroof
   scale_fill_brewer(palette="Paired",name="Sites:",
                     breaks=c("BFB", "DGM", "SSH", "EWB", "WSC", "HDB", "SNC"),
                     labels=c("Bedford barren","Dusty goldenrod meadow", "Slate shale hill", "Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
-richness.plot.p
+richness.plot.n
 
 #site abundance by site type
-abundance.plot.p<-ggplot(P, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = abundance, fill=Site))+
+abundance.plot.n<-ggplot(NE, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = abundance, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -1720,10 +1719,10 @@ abundance.plot.p<-ggplot(P, aes(x = factor(sitetype,level = c("Natural","Greenro
   scale_fill_brewer(palette="Paired",name="Sites:",
                     breaks=c("BFB", "DGM", "SSH", "EWB", "WSC", "HDB", "SNC"),
                     labels=c("Bedford barren","Dusty goldenrod meadow", "Slate shale hill", "Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
-abundance.plot.p
+abundance.plot.n
 
 #site diversity by site type
-diversity.plot.p<-ggplot(P, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = diversity, fill=Site))+
+diversity.plot.n<-ggplot(NE, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = diversity, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -1733,10 +1732,10 @@ diversity.plot.p<-ggplot(P, aes(x = factor(sitetype,level = c("Natural","Greenro
   scale_fill_brewer(palette="Paired",name="Sites:",
                     breaks=c("BFB", "DGM", "SSH", "EWB", "WSC", "HDB", "SNC"),
                     labels=c("Bedford barren","Dusty goldenrod meadow", "Slate shale hill", "Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
-diversity.plot.p
+diversity.plot.n
 
 #site evenness by site type
-evenness.plot.p<-ggplot(P, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = evenness, fill=Site))+
+evenness.plot.n<-ggplot(NE, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = evenness, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -1746,17 +1745,17 @@ evenness.plot.p<-ggplot(P, aes(x = factor(sitetype,level = c("Natural","Greenroo
   scale_fill_brewer(palette="Paired",name="Sites:",
                     breaks=c("BFB", "DGM", "SSH", "EWB", "WSC", "HDB", "SNC"),
                     labels=c("Bedford barren","Dusty goldenrod meadow", "Slate shale hill", "Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
-evenness.plot.p
+evenness.plot.n
 
 ###
 #mush together plots
 library(ggpubr) 
-pollinator_boxplot <- ggarrange(richness.plot.p, abundance.plot.p, diversity.plot.p, evenness.plot.p,
+naturalenemy_boxplot <- ggarrange(richness.plot.n, abundance.plot.n, diversity.plot.n, evenness.plot.n,
                                 #labels = c("A", "B", "C", "D"),
                                 ncol = 1, nrow = 4,
                                 common.legend = TRUE, legend = "bottom")
-pollinator_boxplot
+naturalenemy_boxplot
 
-pdf("pollinator_boxplot.pdf", height=8, width=8) #height and width in inches
-pollinator_boxplot
+pdf("naturalenemy_boxplot.pdf", height=8, width=8) #height and width in inches
+naturalenemy_boxplot
 dev.off()
