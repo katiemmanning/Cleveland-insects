@@ -435,7 +435,7 @@ anova(richmodel.d)
 
 rich.emm.d<-emmeans(richmodel.d,pairwise~design) #comparing SE vs BE
 rich.emm.d
-#results: no difference (p=0.1631)
+#results: no difference btw SE and BE (p=0.1631)
 rich.cld.d<-multcomp::cld(rich.emm.d, alpha = 0.05, Letters = LETTERS)
 rich.cld.d 
 
@@ -671,7 +671,7 @@ evenness.plot.d
 
 ###
 #mush together plots
-#library(ggpubr) 
+library(ggpubr) 
 greenroofbugs_boxplot <- ggarrange(richness.plot.d, abundance.plot.d, diversity.plot.d, evenness.plot.d,
                              #labels = c("A", "B", "C", "D"),
                              ncol = 1, nrow = 4,
@@ -761,7 +761,7 @@ anova(betadisper(distances_data, env.matrix$sitetype))
 ##
 
 #NMDS of natural versus SE green roof
-SE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_pooled_mitigation%20and%20natural.csv", na.strings=NULL)
+SE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_pooled_SE%20and%20natural.csv", na.strings=NULL)
 
 #Create matrix of environmental variables    
 env.matrix_SE<-SE[c(1:3)]
@@ -805,7 +805,7 @@ anova(betadisper(distances_data, env.matrix_SE$type))
 #
 
 #NMDS of natural versus BE green roof
-BE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_pooled_habitat%20and%20natural.csv", na.strings=NULL)
+BE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_pooled_BE%20and%20natural.csv", na.strings=NULL)
 
 #Create matrix of environmental variables    
 env.matrix_BE<-BE[c(1:3)]
@@ -842,7 +842,7 @@ fit
 #check assumption of homogeneity of multivariate dispersion 
 #P-value greater than 0.05 means assumption has been met
 distances_data<-vegdist(com.matrix_BE)
-anova(betadisper(distances_data, env.matrix_hab$BE))
+anova(betadisper(distances_data, env.matrix_BE$type))
 #P-value = 0.20 -- assumes homogeneity of multivariate dispersion
 
 #merge habitat and mitigation NMDSs into one figure
@@ -855,7 +855,7 @@ ordiellipse(NMDS_SE, env.matrix_SE$type, draw="polygon", col="#F0E442",kind="sd"
 ordiellipse(NMDS_SE, env.matrix_SE$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
 points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="Natural"),pch=19, col="#009E73")
 points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="SE"), pch=15, col="#F0E442")
-legend(-0.365,1.38, title=NULL, pch=c(19,15), col=c("#009E73","#F0E442"), cex=1.5, legend=c("Natural", "SE"))
+legend(-0.23,1.38, title=NULL, pch=c(19,15), col=c("#009E73","#F0E442"), cex=1.5, legend=c("Natural", "SE"))
 
 plot(NMDS_BE, disp='sites', type="n")
 title(main="B", adj = 0.02, line = -2, cex.main=1.5)
