@@ -49,9 +49,9 @@ str(allbugs19)
 
 #add data subset for green roof sites
 greenroofbugs19 <- allbugs19[ which(allbugs19$sitetype=="Greenroof"), ]
-#add column for plant type (designed for habitat vs designed for mitigation - ie storm water)
-greenroofbugs19$design<-ifelse(greenroofbugs19$Site=="EWB", "Mitigation",
-                                ifelse(greenroofbugs19$Site=="WSC", "Mitigation", "Habitat"))
+#add column for green roof functional intent (stormwater-energy and biodiversity-ecological)
+greenroofbugs19$design<-ifelse(greenroofbugs19$Site=="EWB", "SE",
+                                ifelse(greenroofbugs19$Site=="WSC", "SE", "BE"))
 str(greenroofbugs19)
 
 #add data subset for natural sites
@@ -107,9 +107,9 @@ str(allbugs21)
 
 #add data subset for green roof sites
 greenroofbugs21 <- allbugs21[ which(allbugs21$sitetype=="Greenroof"), ]
-#add column for plant type (designed for habitat vs designed for mitigation - ie storm water)
-greenroofbugs21$design<-ifelse(greenroofbugs21$Site=="EWB", "Mitigation",
-                                  ifelse(greenroofbugs21$Site=="WSC", "Mitigation", "Habitat"))
+#add column for green roof functional intent (stormwater-energy and biodiversity-ecological)
+greenroofbugs21$design<-ifelse(greenroofbugs21$Site=="EWB", "SE",
+                                  ifelse(greenroofbugs21$Site=="WSC", "SE", "BE"))
 str(greenroofbugs21)
 
 #add data subset for natural sites
@@ -433,9 +433,9 @@ summary(richmodel.d)
 AIC(richmodel.d)
 anova(richmodel.d) 
 
-rich.emm.d<-emmeans(richmodel.d,pairwise~design) #comparing habitat vs mitigation
+rich.emm.d<-emmeans(richmodel.d,pairwise~design) #comparing SE vs BE
 rich.emm.d
-#results: no difference between hab and mit (p=0.1631)
+#results: no difference (p=0.1631)
 rich.cld.d<-multcomp::cld(rich.emm.d, alpha = 0.05, Letters = LETTERS)
 rich.cld.d 
 
@@ -482,7 +482,7 @@ anova(abunmodel.d)
 
 abun.emm.d<-emmeans(abunmodel.d,pairwise~design) 
 abun.emm.d
-#results: difference between habitat and mitigation (p=0.0056)
+#results: difference (p=0.0056)
 abun.cld.d<-multcomp::cld(abun.emm.d, alpha = 0.05, Letters = LETTERS)
 abun.cld.d 
 
@@ -494,7 +494,6 @@ abun.cld.t
 
 #check assumptions
 dotchart(greenroofbugs$abundance, main = "abundance") # way to visualize outliers
-#clustered towards 0 --- outliers of ~1000
 
 with(greenroofbugs, ad.test(abundance)) #Anderson-darling test for normality (good for small sample sizes), low p-value means assumption is violated
 #p-value = < 2.2e-16
@@ -530,7 +529,7 @@ anova(divmodel.d)
 
 div.emm.d<-emmeans(divmodel.d,pairwise~design) 
 div.emm.d
-#results: no difference between hab and mit (p=0.0686)
+#results: no difference (p=0.0686)
 div.cld.d<-multcomp::cld(div.emm.d, alpha = 0.05, Letters = LETTERS)
 div.cld.d 
 
@@ -577,7 +576,7 @@ anova(evenmodel.d)
 
 even.emm.d<-emmeans(evenmodel.d,pairwise~design) 
 even.emm.d
-#results: difference between hab and mit (p 0.0273)
+#results: difference (p 0.0273)
 even.cld.d<-multcomp::cld(even.emm.d, alpha = 0.05, Letters = LETTERS)
 even.cld.d
 
@@ -619,7 +618,7 @@ influenceIndexPlot(evenmodel.d, vars = c("Cook"), id = list(n = 3))
 #library (ggplot2)
 
 #site richness by site type
-richness.plot.d<-ggplot(greenroofbugs, aes(x = factor(design,level = c("Mitigation","Habitat")), y = richness, fill=Site))+
+richness.plot.d<-ggplot(greenroofbugs, aes(x = factor(design,level = c("SE","BE")), y = richness, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -631,7 +630,7 @@ richness.plot.d<-ggplot(greenroofbugs, aes(x = factor(design,level = c("Mitigati
 richness.plot.d
 
 #site abundance by site type
-abundance.plot.d<-ggplot(greenroofbugs, aes(x = factor(design,level = c("Mitigation","Habitat")), y = abundance, fill=Site))+
+abundance.plot.d<-ggplot(greenroofbugs, aes(x = factor(design,level = c("SE","BE")), y = abundance, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -645,7 +644,7 @@ abundance.plot.d<-ggplot(greenroofbugs, aes(x = factor(design,level = c("Mitigat
 abundance.plot.d
 
 #site diversity by site type
-diversity.plot.d<-ggplot(greenroofbugs, aes(x = factor(design,level = c("Mitigation","Habitat")), y = diversity, fill=Site))+
+diversity.plot.d<-ggplot(greenroofbugs, aes(x = factor(design,level = c("SE","BE")), y = diversity, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -658,7 +657,7 @@ diversity.plot.d<-ggplot(greenroofbugs, aes(x = factor(design,level = c("Mitigat
 diversity.plot.d
 
 #site evenness by site type
-evenness.plot.d<-ggplot(greenroofbugs, aes(x = factor(design,level = c("Mitigation","Habitat")), y = evenness, fill=Site))+
+evenness.plot.d<-ggplot(greenroofbugs, aes(x = factor(design,level = c("SE","BE")), y = evenness, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -761,110 +760,110 @@ anova(betadisper(distances_data, env.matrix$sitetype))
 
 ##
 
-#NMDS of natural versus mitigation green roof
-mit <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_pooled_mitigation%20and%20natural.csv", na.strings=NULL)
+#NMDS of natural versus SE green roof
+SE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_pooled_mitigation%20and%20natural.csv", na.strings=NULL)
 
 #Create matrix of environmental variables    
-env.matrix_mit<-mit[c(1:3)]
+env.matrix_SE<-SE[c(1:3)]
 
 #create matrix of community variables
-com.matrix_mit<-mit[c(4:43)]
+com.matrix_SE<-SE[c(4:43)]
 
 #change to presence/absence
-com.matrix_mit[com.matrix_mit > 0] <- 1
-str(com.matrix_mit)
-rowSums(com.matrix_mit)
+com.matrix_SE[com.matrix_SE > 0] <- 1
+str(com.matrix_SE)
+rowSums(com.matrix_SE)
 
 #ordination by NMDS
-NMDS_mit<-metaMDS(com.matrix_mit, distance="bray", k=2, autotransform=TRUE, trymax=300)
-NMDS_mit
+NMDS_SE<-metaMDS(com.matrix_SE, distance="bray", k=2, autotransform=TRUE, trymax=300)
+NMDS_SE
 ###stress = 0.18
-stressplot(NMDS_mit)
+stressplot(NMDS_SE)
 
 #plot
-plot(NMDS_mit, disp='sites', type="n")
+plot(NMDS_SE, disp='sites', type="n")
 #add ellipsoids with ordiellipse
-ordiellipse(NMDS_mit, env.matrix_mit$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Mitigation")
-ordiellipse(NMDS_mit, env.matrix_mit$type, draw="polygon", col="#E69F00",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
+ordiellipse(NMDS_SE, env.matrix_SE$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "SE")
+ordiellipse(NMDS_SE, env.matrix_SE$type, draw="polygon", col="#E69F00",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
 #add data points
-points(NMDS_mit, display="sites", select=which(env.matrix_mit$type=="Natural"),pch=19, col="#E69F00")
-points(NMDS_mit, display="sites", select=which(env.matrix_mit$type=="Mitigation"), pch=17, col="#009E73")
+points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="Natural"),pch=19, col="#E69F00")
+points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="SE"), pch=17, col="#009E73")
 #add legend
-#legend(0.5,0.5, title=NULL, pch=c(19,17), col=c("#E69F00","#009E73"), cex=1.5, legend=c("Natural", "Mitigation"))
+#legend(0.5,0.5, title=NULL, pch=c(19,17), col=c("#E69F00","#009E73"), cex=1.5, legend=c("Natural", "SE"))
 
-#bootstrapping and testing for differences between the groups (mitigation and natural)
-fit<-adonis(com.matrix_mit ~ type, data = env.matrix_mit, permutations = 999, method="bray")
+#bootstrapping and testing for differences between the groups (SE and natural)
+fit<-adonis(com.matrix_SE ~ type, data = env.matrix_SE, permutations = 999, method="bray")
 fit
 #P=0.08
 
 #check assumption of homogeneity of multivariate dispersion 
 #P-value greater than 0.05 means assumption has been met
-distances_data<-vegdist(com.matrix_mit)
-anova(betadisper(distances_data, env.matrix_mit$type))
+distances_data<-vegdist(com.matrix_SE)
+anova(betadisper(distances_data, env.matrix_SE$type))
 #P-value = 0.006 -- cannot assume homogeneity of multivariate dispersion
 
 #
 
-#NMDS of natural versus habitat green roof
-hab <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_pooled_habitat%20and%20natural.csv", na.strings=NULL)
+#NMDS of natural versus BE green roof
+BE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_pooled_habitat%20and%20natural.csv", na.strings=NULL)
 
 #Create matrix of environmental variables    
-env.matrix_hab<-hab[c(1:3)]
+env.matrix_BE<-BE[c(1:3)]
 
 #create matrix of community variables
-com.matrix_hab<-hab[c(4:43)]
+com.matrix_BE<-BE[c(4:43)]
 
 #change to presence/absence
-com.matrix_hab[com.matrix_hab > 0] <- 1
-str(com.matrix_hab)
-rowSums(com.matrix_hab)
+com.matrix_BE[com.matrix_BE > 0] <- 1
+str(com.matrix_BE)
+rowSums(com.matrix_BE)
 
 #ordination by NMDS
-NMDS_hab<-metaMDS(com.matrix_hab, distance="bray", k=2, autotransform=TRUE, trymax=300)
-NMDS_hab
+NMDS_BE<-metaMDS(com.matrix_BE, distance="bray", k=2, autotransform=TRUE, trymax=300)
+NMDS_BE
 ###stress = 0.18
-stressplot(NMDS_hab)
+stressplot(NMDS_BE)
 
-plot(NMDS_hab, disp='sites', type="n")
+plot(NMDS_BE, disp='sites', type="n")
 #add ellipsoids with ordiellipse
-ordiellipse(NMDS_hab, env.matrix_hab$type, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "Habitat")
-ordiellipse(NMDS_hab, env.matrix_hab$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
+ordiellipse(NMDS_BE, env.matrix_BE$type, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "BE")
+ordiellipse(NMDS_BE, env.matrix_BE$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
 #add data points
-points(NMDS_hab, display="sites", select=which(env.matrix_hab$type=="Natural"),pch=19, col="#009E73")
-points(NMDS_hab, display="sites", select=which(env.matrix_hab$type=="Habitat"), pch=17, col="#CC79A7")
+points(NMDS_BE, display="sites", select=which(env.matrix_BE$type=="Natural"),pch=19, col="#009E73")
+points(NMDS_BE, display="sites", select=which(env.matrix_BE$type=="BE"), pch=17, col="#CC79A7")
 #add legend
-#legend(0.5,0.5, title=NULL, pch=c(19,17), col=c("#009E73","#CC79A7"), cex=1.5, legend=c("Natural", "Habitat"))
+#legend(0.5,0.5, title=NULL, pch=c(19,17), col=c("#009E73","#CC79A7"), cex=1.5, legend=c("Natural", "BE"))
 
-#bootstrapping and testing for differences between the groups (habitat and natural)
-fit<-adonis(com.matrix_hab ~ type, data = env.matrix_hab, permutations = 999, method="bray")
+#bootstrapping and testing for differences between the groups (BE and natural)
+fit<-adonis(com.matrix_BE ~ type, data = env.matrix_BE, permutations = 999, method="bray")
 fit
 #P=0.001
 
 #check assumption of homogeneity of multivariate dispersion 
 #P-value greater than 0.05 means assumption has been met
-distances_data<-vegdist(com.matrix_hab)
-anova(betadisper(distances_data, env.matrix_hab$type))
+distances_data<-vegdist(com.matrix_BE)
+anova(betadisper(distances_data, env.matrix_hab$BE))
 #P-value = 0.20 -- assumes homogeneity of multivariate dispersion
 
 #merge habitat and mitigation NMDSs into one figure
 pdf("design type NMDSs.pdf", height=6.5, width=13)
 par(mfrow=c(1,2), mar=c(4.1, 4.8, 1.5, 8.1),xpd=TRUE) 
 
-plot(NMDS_mit, disp='sites', type="n")
+plot(NMDS_SE, disp='sites', type="n")
 title(main="A", adj = 0.02, line = -2, cex.main=1.5)
-ordiellipse(NMDS_mit, env.matrix_mit$type, draw="polygon", col="#F0E442",kind="sd", conf=0.95, label=FALSE, show.groups = "Mitigation")
-ordiellipse(NMDS_mit, env.matrix_mit$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
-points(NMDS_mit, display="sites", select=which(env.matrix_mit$type=="Natural"),pch=19, col="#009E73")
-points(NMDS_mit, display="sites", select=which(env.matrix_mit$type=="Mitigation"), pch=15, col="#F0E442")
-legend(-0.365,1.38, title=NULL, pch=c(19,15), col=c("#009E73","#F0E442"), cex=1.5, legend=c("Natural", "Mitigation"))
+ordiellipse(NMDS_SE, env.matrix_SE$type, draw="polygon", col="#F0E442",kind="sd", conf=0.95, label=FALSE, show.groups = "SE")
+ordiellipse(NMDS_SE, env.matrix_SE$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
+points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="Natural"),pch=19, col="#009E73")
+points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="SE"), pch=15, col="#F0E442")
+legend(-0.365,1.38, title=NULL, pch=c(19,15), col=c("#009E73","#F0E442"), cex=1.5, legend=c("Natural", "SE"))
 
-plot(NMDS_hab, disp='sites', type="n")
+plot(NMDS_BE, disp='sites', type="n")
 title(main="B", adj = 0.02, line = -2, cex.main=1.5)
-ordiellipse(NMDS_hab, env.matrix_hab$type, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "Habitat")
-ordiellipse(NMDS_hab, env.matrix_hab$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
-points(NMDS_hab, display="sites", select=which(env.matrix_hab$type=="Natural"),pch=19, col="#009E73")
-points(NMDS_hab, display="sites", select=which(env.matrix_hab$type=="Habitat"), pch=18, col="#CC79A7")
-legend(0.022,1.2, title=NULL, pch=c(19,18), col=c("#009E73","#CC79A7"), cex=1.5, legend=c("Natural", "Habitat"))
+ordiellipse(NMDS_BE, env.matrix_BE$type, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "BE")
+ordiellipse(NMDS_BE, env.matrix_BE$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
+points(NMDS_BE, display="sites", select=which(env.matrix_BE$type=="Natural"),pch=19, col="#009E73")
+points(NMDS_BE, display="sites", select=which(env.matrix_BE$type=="BE"), pch=18, col="#CC79A7")
+legend(0.022,1.2, title=NULL, pch=c(19,18), col=c("#009E73","#CC79A7"), cex=1.5, legend=c("Natural", "BE"))
 dev.off()
 ###
 
@@ -897,17 +896,17 @@ stressplot(NMDS_gr)
 plot(NMDS_gr, disp='sites', type="n")
 #title(main="Arthropod community composition by site type", cex.main=1.5)
 #add ellipsoids with ordiellipse
-ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#F0E442",kind="sd", conf=0.95, label=FALSE, show.groups = "Mitigation")
-ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "Habitat")
+ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#F0E442",kind="sd", conf=0.95, label=FALSE, show.groups = "SE")
+ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "BE")
 #add data points
-points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Habitat"),pch=18, col="#CC79A7")
-points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Mitigation"), pch=15, col="#F0E442")
+points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="BE"),pch=18, col="#CC79A7")
+points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="SE"), pch=15, col="#F0E442")
 #add legend
-legend(0.375,0.815, title=NULL, pch=c(18,15), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("Habitat", "Mitigation"))
+legend(0.375,0.815, title=NULL, pch=c(18,15), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("BE", "SE"))
 #ordilabel(NMDS, display="species", select =which (include==TRUE & pollinator == TRUE), cex=0.6, col="black", fill="white")
 #ordilabel(NMDS, display="species", select =which (include==TRUE & natural_enemies == TRUE), cex=0.6, col="white", fill="black")
 
-#bootstrapping and testing for differences between the groups (habitat v mitigation)
+#bootstrapping and testing for differences between the groups (BE v SE)
 fit<-adonis(com.matrix_gr ~ design, data = env.matrix_gr, permutations = 999, method="bray")
 fit
 #P=0.732
@@ -936,7 +935,7 @@ legend(0.375,0.815, title=NULL, pch=c(18,15, 19, 20), col=c("#F0E442", "#CC79A7"
 #ordilabel(NMDS, display="species", select =which (include==TRUE & pollinator == TRUE), cex=0.6, col="black", fill="white")
 #ordilabel(NMDS, display="species", select =which (include==TRUE & natural_enemies == TRUE), cex=0.6, col="white", fill="black")
 
-#bootstrapping and testing for differences between the groups (habitat v mitigation)
+#bootstrapping and testing for differences between the groups (BE v SE)
 fit<-adonis(com.matrix_gr ~ Site, data = env.matrix_gr, permutations = 999, method="bray")
 fit
 #P > 0.05  ~0.08
@@ -966,11 +965,11 @@ legend(-0.25,1.21, title=NULL, pch=c(19,17), col=c("#009E73","#E69F00"), cex=1.5
 
 plot(NMDS_gr, disp='sites', type="n")
 title(main="B", adj = 0.02, line = -2, cex.main=1.5)
-ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#F0E442",kind="sd", conf=0.95, label=FALSE, show.groups = "Mitigation")
-ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "Habitat")
-points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Habitat"),pch=18, col="#CC79A7")
-points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="Mitigation"), pch=15, col="#F0E442")
-legend(0.45,1.295, title=NULL, pch=c(18,15), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("Habitat", "Mitigation"))
+ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#F0E442",kind="sd", conf=0.95, label=FALSE, show.groups = "SE")
+ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "BE")
+points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="BE"),pch=18, col="#CC79A7")
+points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="SE"), pch=15, col="#F0E442")
+legend(0.45,1.295, title=NULL, pch=c(18,15), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("BE", "SE"))
 dev.off()
 
 ###
@@ -1769,9 +1768,9 @@ dev.off()
 #Pollinators
 #add data subset for green roof sites
 greenroofpollinators <- P[ which(P$sitetype=="Greenroof"), ]
-#add column for plant type (designed for habitat vs designed for mitigation - ie storm water)
-greenroofpollinators$design<-ifelse(greenroofpollinators$Site=="EWB", "Mitigation",
-                               ifelse(greenroofpollinators$Site=="WSC", "Mitigation", "Habitat"))
+#add column for green roof functional intent (stormwater-energy and biodiversity-ecological)
+greenroofpollinators$design<-ifelse(greenroofpollinators$Site=="EWB", "SE",
+                               ifelse(greenroofpollinators$Site=="WSC", "SE", "BE"))
 str(greenroofpollinators)
 
 ##Pollinator GR richness linear model
@@ -1780,9 +1779,9 @@ summary(richmodel.p)
 AIC(richmodel.p)
 anova(richmodel.p) 
 
-rich.emm<-emmeans(richmodel.p,pairwise~design) #comparing habitat v mitigation
+rich.emm<-emmeans(richmodel.p,pairwise~design) #comparing SE v BE
 rich.emm
-#results: no difference between natural and green roofs (p 0.45)
+#results: no difference (p 0.45)
 rich.cld<-multcomp::cld(rich.emm, alpha = 0.05, Letters = LETTERS)
 rich.cld 
 
@@ -1829,7 +1828,7 @@ anova(abunmodel.p)
 
 abun.emm<-emmeans(abunmodel.p,pairwise~design) 
 abun.emm
-#results: no difference between habitat and mitigation (p=0.08)
+#results: no difference between SE and BE (p=0.08)
 abun.cld<-multcomp::cld(abun.emm, alpha = 0.05, Letters = LETTERS)
 abun.cld 
 
@@ -1876,7 +1875,7 @@ anova(divmodel.p)
 
 div.emm<-emmeans(divmodel.p,pairwise~design) 
 div.emm
-#results: no difference btw habitat and mitigation green roofs (p=0.4344)
+#results: no difference btw SE and BE green roofs (p=0.4344)
 div.cld<-multcomp::cld(div.emm, alpha = 0.05, Letters = LETTERS)
 div.cld 
 
@@ -1923,7 +1922,7 @@ anova(evenmodel.p)
 
 even.emm<-emmeans(evenmodel.p,pairwise~design) 
 even.emm
-#results: no difference habitat and mitigation green roofs (p = 0.6321)
+#results: no difference btw SE and BE green roofs (p = 0.6321)
 even.cld<-multcomp::cld(even.emm, alpha = 0.05, Letters = LETTERS)
 even.cld
 
@@ -2038,9 +2037,9 @@ dev.off()
 #Natural enemies
 #add data subset for green roof sites
 greenroofNE <- NE[ which(NE$sitetype=="Greenroof"), ]
-#add column for plant type (designed for habitat vs designed for mitigation - ie storm water)
-greenroofNE$design<-ifelse(greenroofNE$Site=="EWB", "Mitigation",
-                                    ifelse(greenroofNE$Site=="WSC", "Mitigation", "Habitat"))
+#add column for green roof functional intent (stormwater-energy and biodiversity-ecological)
+greenroofNE$design<-ifelse(greenroofNE$Site=="EWB", "SE",
+                                    ifelse(greenroofNE$Site=="WSC", "SE", "BE"))
 str(greenroofNE)
 
 ##Natural GR enemy richness linear model
@@ -2049,9 +2048,9 @@ summary(richmodel.n)
 AIC(richmodel.n)
 anova(richmodel.n) 
 
-rich.emm<-emmeans(richmodel.n,pairwise~design) #comparing habitat and mitigation
+rich.emm<-emmeans(richmodel.n,pairwise~design) #comparing SE and BE
 rich.emm
-#results: no difference between habitat and mitgation green roofs (p =0.1110)
+#results: no difference btw SE and BE green roofs (p =0.1110)
 rich.cld<-multcomp::cld(rich.emm, alpha = 0.05, Letters = LETTERS)
 rich.cld 
 
@@ -2098,7 +2097,7 @@ anova(abunmodel.n)
 
 abun.emm<-emmeans(abunmodel.n,pairwise~design) 
 abun.emm
-#results: no difference btw habitat and mitigation green roofs (p=0.2450)
+#results: no difference btw SE and BE roofs (p=0.2450)
 abun.cld<-multcomp::cld(abun.emm, alpha = 0.05, Letters = LETTERS)
 abun.cld 
 
@@ -2145,7 +2144,7 @@ anova(divmodel.n)
 
 div.emm<-emmeans(divmodel.n,pairwise~design) 
 div.emm
-#results: difference between habitat and mit green roofs (p=0.04) - higher in mitigation
+#results: difference between SE and BE green roofs (p=0.04) - higher in SE
 div.cld<-multcomp::cld(div.emm, alpha = 0.05, Letters = LETTERS)
 div.cld 
 
@@ -2192,7 +2191,7 @@ anova(evenmodel.n)
 
 even.emm<-emmeans(evenmodel.n,pairwise~design) 
 even.emm
-#results: difference between natural (greater) and green roofs (p = 0.7846)
+#results: difference between green roofs (p = 0.7846)
 even.cld<-multcomp::cld(even.emm, alpha = 0.05, Letters = LETTERS)
 even.cld
 
