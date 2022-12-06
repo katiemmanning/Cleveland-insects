@@ -303,7 +303,7 @@ influenceIndexPlot(divmodel, vars = c("Cook"), id = list(n = 3))
 
 #
 
-##evenness linear mixed effects model
+##evenness linear model
 evenmodel <- lm(evenness~Date + Site + sitetype + Trap, data=allbugs)  #AIC = -141
 summary(evenmodel)
 AIC(evenmodel)
@@ -414,9 +414,9 @@ evenness.plot
 ###
 #mush together plots
 library(ggpubr) 
-allbugs_boxplot <- ggarrange(richness.plot, abundance.plot, diversity.plot, evenness.plot,
-                             #labels = c("A", "B", "C", "D"),
-                             ncol = 1, nrow = 4,
+allbugs_boxplot <- ggarrange(richness.plot, diversity.plot,
+                             #labels = c("A", "B"),
+                             ncol = 1, nrow = 2,
                              common.legend = TRUE, legend = "bottom")
 allbugs_boxplot
 
@@ -676,9 +676,9 @@ evenness.plot.d
 ###
 #mush together plots
 library(ggpubr) 
-greenroofbugs_boxplot <- ggarrange(richness.plot.d, abundance.plot.d, diversity.plot.d, evenness.plot.d,
-                             #labels = c("A", "B", "C", "D"),
-                             ncol = 1, nrow = 4,
+greenroofbugs_boxplot <- ggarrange(richness.plot.d, diversity.plot.d,
+                             #labels = c("A", "B"),
+                             ncol = 1, nrow = 2,
                              common.legend = TRUE, legend = "none")
 greenroofbugs_boxplot
 
