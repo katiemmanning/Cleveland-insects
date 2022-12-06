@@ -36,6 +36,10 @@ allbugs19$abundance <- allbugs19.abun
 #load vegan
 library(vegan)
 
+#standardize abundance (relative abundance)
+#can't put into dataframe
+relative.abun <- decostand(allbugs19[,4:43], method="total")
+
 #calculate Shannon diversity
 diversity <-diversity(allbugs19[,4:43])
 allbugs19$diversity <-diversity
