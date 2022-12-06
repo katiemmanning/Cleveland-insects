@@ -679,7 +679,7 @@ library(ggpubr)
 greenroofbugs_boxplot <- ggarrange(richness.plot.d, diversity.plot.d,
                              #labels = c("A", "B"),
                              ncol = 1, nrow = 2,
-                             common.legend = TRUE, legend = "none")
+                             common.legend = TRUE, legend = "bottom")
 greenroofbugs_boxplot
 
 pdf("greenroofbugs_boxplot.pdf", height=8, width=8) #height and width in inches
