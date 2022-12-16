@@ -621,6 +621,16 @@ influenceIndexPlot(evenmodel.d, vars = c("Cook"), id = list(n = 3))
 #ggplot box plots
 #library (ggplot2)
 
+library(RColorBrewer)
+display.brewer.all(colorblindFriendly = TRUE)
+#get names of colors used in last box plot to match colors to sites in this boxplot
+display.brewer.pal(n = 8, name = 'Paired')
+brewer.pal(n = 8, name = "Paired")
+#EWB - light green = #B2DF8A
+#WSC - light orange = #FDBF6F
+#HDB - dark green = #33A02C
+#SNC - pink = #FB9A99
+
 #site richness by site type
 richness.plot.d<-ggplot(greenroofbugs, aes(x = factor(design,level = c("SE","BE")), y = richness, fill=Site))+
   geom_boxplot()+
@@ -628,7 +638,7 @@ richness.plot.d<-ggplot(greenroofbugs, aes(x = factor(design,level = c("SE","BE"
   theme(legend.position="bottom")+
   labs(title="", x="", y="Richness")+
   #theme (plot.title = element_text(hjust=0.5))+
-  scale_fill_brewer(palette="Paired",name="Sites:",
+  scale_fill_manual(values=c("#B2DF8A","#FDBF6F","#33A02C","#FB9A99"),name="Sites:",
                     breaks=c("EWB", "WSC", "HDB", "SNC"),
                     labels=c("Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
 richness.plot.d
@@ -655,7 +665,7 @@ diversity.plot.d<-ggplot(greenroofbugs, aes(x = factor(design,level = c("SE","BE
   labs(title="", x="", y="Diversity")+
   #theme (plot.title = element_text(hjust=0.5))+
   #geom_text(data=div.cld.s, aes(y = 2, label = .group))+
-  scale_fill_brewer(palette="Paired",name="Sites:",
+  scale_fill_manual(values=c("#B2DF8A","#FDBF6F","#33A02C","#FB9A99"),name="Sites:",
                     breaks=c("EWB", "WSC", "HDB", "SNC"),
                     labels=c("Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
 diversity.plot.d
