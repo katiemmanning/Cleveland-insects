@@ -146,7 +146,7 @@ anova(richmodel)
 
 rich.emm<-emmeans(richmodel,pairwise~sitetype) #comparing natural vs GR
 rich.emm
-#results: difference between natural and green roofs (p = 0.03)
+#results: difference between natural (higher) and green roofs (p = 0.03)
 rich.cld<-multcomp::cld(rich.emm, alpha = 0.05, Letters = LETTERS)
 rich.cld 
 
@@ -194,7 +194,7 @@ anova(abunmodel)
 
 abun.emm<-emmeans(abunmodel,pairwise~sitetype) 
 abun.emm
-#results: difference between natural and green roofs (p=0.0469)
+#results: difference between natural (higher) and green roofs (p=0.0469)
 abun.cld<-multcomp::cld(abun.emm, alpha = 0.05, Letters = LETTERS)
 abun.cld 
 
@@ -975,23 +975,23 @@ ramps <- rbind.fill (ramps19, jars21)
 
 #calculate mean and SE richness, abundance, diversity and evenness of each trap type
 
-insects.abun <- rowSums(ramps19[,4:43])
+insects.abun <- rowSums(ramps19[,5:44])
 ramps19$abundance <- insects.abun
-insects.rowsums <- rowSums(ramps19[,4:43]>0)
+insects.rowsums <- rowSums(ramps19[,5:44]>0)
 ramps19$richness <- insects.rowsums
 #need vegan to run diversity and evenness
-diversity <-diversity(ramps19[,4:43])
+diversity <-diversity(ramps19[,5:44])
 ramps19$diversity <-diversity
-evenness <-diversity/log(specnumber(ramps19[,4:43]))
+evenness <-diversity/log(specnumber(ramps19[,5:44]))
 ramps19$evenness <- evenness
 
-insects.abun <- rowSums(jars21[,4:43])
+insects.abun <- rowSums(jars21[,5:44])
 jars21$abundance <- insects.abun
-insects.rowsums <- rowSums(jars21[,4:43]>0)
+insects.rowsums <- rowSums(jars21[,5:44]>0)
 jars21$richness <- insects.rowsums
-diversity <-diversity(jars21[,4:43])
+diversity <-diversity(jars21[,5:44])
 jars21$diversity <-diversity
-evenness <-diversity/log(specnumber(jars21[,4:43]))
+evenness <-diversity/log(specnumber(jars21[,5:44]))
 jars21$evenness <- evenness
 
 mean(ramps19$abundance) #72.35
@@ -1022,9 +1022,9 @@ sd(jars21$evenness)/sqrt(10) #NA
 #library (vegan)
 
 #Create matrix of environmental variables
-env.matrix_ramps<-ramps[c(1:3,44)]
+env.matrix_ramps<-ramps[c(1:4,45)]
 #create matrix of community variables
-com.matrix_ramps<-ramps[c(4:43)]
+com.matrix_ramps<-ramps[c(5:44)]
 
 ##Started pooling -- will finish if NMDS is wanted
 #bring in pooled data
@@ -1055,10 +1055,10 @@ library (BiodiversityR)
 library(ggplot2)
 
 #individual curves for each trap type
-ramp.com.matrix<-ramps19[c(4:43)]
+ramp.com.matrix<-ramps19[c(5:44)]
 ramp_curve<-accumresult(ramp.com.matrix, method = "exact", permutations = 1000)
 
-jar.com.matrix<-jars21[c(4:43)]
+jar.com.matrix<-jars21[c(5:44)]
 jar_curve<-accumresult(jar.com.matrix, method = "exact", permutations = 1000)
 
 #first-order jackknife estimates are based on the number of singletons
@@ -1452,7 +1452,7 @@ anova(richmodel.n)
 
 rich.emm<-emmeans(richmodel.n,pairwise~sitetype) #comparing natural vs GR
 rich.emm
-#results: difference between natural (higher) and green roofs (p = 0.115)
+#results: difference between natural (higher) and green roofs (p = 0.0115)
 rich.cld<-multcomp::cld(rich.emm, alpha = 0.05, Letters = LETTERS)
 rich.cld 
 
@@ -1717,20 +1717,20 @@ greenroofpollinators$design<-ifelse(greenroofpollinators$Site=="EWB", "SE",
 str(greenroofpollinators)
 
 ##Pollinator GR richness linear model
-richmodel.p <- lm(richness~Date + Site + design + Trap, data=greenroofpollinators)  #AIC = 355
+richmodel.p <- lmer(richness~Date + design + Trap + (1|Site:Replicate), data=greenroofpollinators)  #AIC = 402
 summary(richmodel.p)
 AIC(richmodel.p)
 anova(richmodel.p) 
 
 rich.emm<-emmeans(richmodel.p,pairwise~design) #comparing SE v BE
 rich.emm
-#results: no difference (p 0.45)
+#results: no difference btw design types (p 0.3894)
 rich.cld<-multcomp::cld(rich.emm, alpha = 0.05, Letters = LETTERS)
 rich.cld 
 
 rich.emm.t<-emmeans(richmodel.p,pairwise~Trap) 
 rich.emm.t
-#results: bowls sig greater than all other trap types
+#results: bowls sig greater than all other trap types, same btw all others
 rich.cld.t<-multcomp::cld(rich.emm.t, alpha = 0.05, Letters = LETTERS)
 rich.cld.t 
 
@@ -1763,21 +1763,22 @@ influenceIndexPlot(richmodel.p, vars = c("Cook"), id = list(n = 3))
 
 #
 
+#NOT INCLUDING
 ##Pollinator GR abundance linear model
-abunmodel.p <- lm(abundance~Date + Site + design + Trap, data=greenroofpollinators)  #AIC = 1094
+abunmodel.p <- lmer(abundance~Date + design + Trap + (1|Site:Replicate), data=greenroofpollinators)  #AIC = 1096
 summary(abunmodel.p)
 AIC(abunmodel.p)
 anova(abunmodel.p)
 
 abun.emm<-emmeans(abunmodel.p,pairwise~design) 
 abun.emm
-#results: no difference between SE and BE (p=0.08)
+#results: no difference between SE and BE (p=0.0969)
 abun.cld<-multcomp::cld(abun.emm, alpha = 0.05, Letters = LETTERS)
 abun.cld 
 
 abun.emm.t<-emmeans(abunmodel.p,pairwise~Trap) 
 abun.emm.t
-#results: bowl sig diff from all trap types (bowls caught highest abun, then ramps) - no diff btw rest
+#results: bowl sig diff from jar and sticky cards (bowls caught highest abun, then ramps) - no diff btw rest
 abun.cld.t<-multcomp::cld(abun.emm.t, alpha = 0.05, Letters = LETTERS)
 abun.cld.t 
 
@@ -1811,14 +1812,14 @@ influenceIndexPlot(abunmodel.p, vars = c("Cook"), id = list(n = 3))
 #
 
 ##Pollinator GR diversity linear model
-divmodel.p <- lm(diversity~Date + Site + design + Trap, data=greenroofpollinators)  #AIC = -168
+divmodel.p <- lmer(diversity~Date + design + Trap + (1|Site:Replicate), data=greenroofpollinators)  #AIC = -103
 summary(divmodel.p)
 AIC(divmodel.p)
 anova(divmodel.p)
 
 div.emm<-emmeans(divmodel.p,pairwise~design) 
 div.emm
-#results: no difference btw SE and BE green roofs (p=0.4344)
+#results: no difference btw SE and BE green roofs (p=0.4633)
 div.cld<-multcomp::cld(div.emm, alpha = 0.05, Letters = LETTERS)
 div.cld 
 
@@ -1857,15 +1858,16 @@ influenceIndexPlot(divmodel.p, vars = c("Cook"), id = list(n = 3))
 
 #
 
+#NOT INCLUDING
 ##Pollinator GR evenness linear model
-evenmodel.p <- lm(evenness~Date + Site + design + Trap, data=greenroofpollinators)  #AIC = -4
+evenmodel.p <- lmer(evenness~Date + design + Trap + (1|Site:Replicate), data=greenroofpollinators)  #AIC = 52
 summary(evenmodel.p)
 AIC(evenmodel.p)
 anova(evenmodel.p) 
 
 even.emm<-emmeans(evenmodel.p,pairwise~design) 
 even.emm
-#results: no difference btw SE and BE green roofs (p = 0.6321)
+#results: no difference btw SE and BE green roofs (p = 0.6687)
 even.cld<-multcomp::cld(even.emm, alpha = 0.05, Letters = LETTERS)
 even.cld
 
@@ -1965,9 +1967,9 @@ evenness.plot.p_gr
 ###
 #mush together plots
 library(ggpubr) 
-pollinator.gr_boxplot <- ggarrange(richness.plot.p_gr, abundance.plot.p_gr, diversity.plot.p_gr, evenness.plot.p_gr,
+pollinator.gr_boxplot <- ggarrange(richness.plot.p_gr, diversity.plot.p_gr, 
                                 #labels = c("A", "B", "C", "D"),
-                                ncol = 1, nrow = 4,
+                                ncol = 1, nrow = 2,
                                 common.legend = TRUE, legend = "bottom")
 pollinator.gr_boxplot
 
@@ -1986,20 +1988,20 @@ greenroofNE$design<-ifelse(greenroofNE$Site=="EWB", "SE",
 str(greenroofNE)
 
 ##Natural GR enemy richness linear model
-richmodel.n <- lm(richness~Date + Site + design + Trap, data=greenroofNE)  #AIC = 515
+richmodel.n <- lmer(richness~Date + design + Trap + (1|Site:Replicate), data=greenroofNE)  #AIC = 569
 summary(richmodel.n)
 AIC(richmodel.n)
 anova(richmodel.n) 
 
 rich.emm<-emmeans(richmodel.n,pairwise~design) #comparing SE and BE
 rich.emm
-#results: no difference btw SE and BE green roofs (p =0.1110)
+#results: no difference btw SE and BE green roofs (p =0.2114)
 rich.cld<-multcomp::cld(rich.emm, alpha = 0.05, Letters = LETTERS)
 rich.cld 
 
 rich.emm.t<-emmeans(richmodel.n,pairwise~Trap) 
 rich.emm.t
-#results: significantly greater richness in sticky cards
+#results: no difference between any trap types
 rich.cld.t<-multcomp::cld(rich.emm.t, alpha = 0.05, Letters = LETTERS)
 rich.cld.t 
 
@@ -2032,21 +2034,22 @@ influenceIndexPlot(richmodel.n, vars = c("Cook"), id = list(n = 3))
 
 #
 
+#NOT INCLUDING
 ##Natural enemy abundance linear model
-abunmodel.n <- lm(abundance~Date + Site + design + Trap, data=greenroofNE)  #AIC = 1305
+abunmodel.n <- lmer(abundance~Date + design + Trap + (1|Site:Replicate), data=greenroofNE)  #AIC = 1305
 summary(abunmodel.n)
 AIC(abunmodel.n)
 anova(abunmodel.n)
 
 abun.emm<-emmeans(abunmodel.n,pairwise~design) 
 abun.emm
-#results: no difference btw SE and BE roofs (p=0.2450)
+#results: no difference btw SE and BE roofs (p=0.0947)
 abun.cld<-multcomp::cld(abun.emm, alpha = 0.05, Letters = LETTERS)
 abun.cld 
 
 abun.emm.t<-emmeans(abunmodel.n,pairwise~Trap) 
 abun.emm.t
-#results: sticky cards sig greater than bowls and jars 
+#results: no difference between any trap types 
 abun.cld.t<-multcomp::cld(abun.emm.t, alpha = 0.05, Letters = LETTERS)
 abun.cld.t 
 
@@ -2080,20 +2083,20 @@ influenceIndexPlot(abunmodel.n, vars = c("Cook"), id = list(n = 3))
 #
 
 ##Natural enemy diversity linear model
-divmodel.n <- lm(diversity~Date + Site + design + Trap, data=greenroofNE)  #AIC = 70
+divmodel.n <- lmer(diversity~Date + design + Trap + (1|Site:Replicate), data=greenroofNE)  #AIC = 129
 summary(divmodel.n)
 AIC(divmodel.n)
 anova(divmodel.n)
 
 div.emm<-emmeans(divmodel.n,pairwise~design) 
 div.emm
-#results: difference between SE and BE green roofs (p=0.04) - higher in SE
+#results: no difference between SE and BE green roofs (p=0.1985) 
 div.cld<-multcomp::cld(div.emm, alpha = 0.05, Letters = LETTERS)
 div.cld 
 
 div.emm.t<-emmeans(divmodel.n,pairwise~Trap) 
 div.emm.t
-#results: sticky cards sig diff from all other traps, all others same - highest div w/ sticky 
+#results: no difference between any trap types 
 div.cld.t<-multcomp::cld(div.emm.t, alpha = 0.05, Letters = LETTERS)
 div.cld.t 
 
@@ -2126,21 +2129,22 @@ influenceIndexPlot(divmodel.n, vars = c("Cook"), id = list(n = 3))
 
 #
 
+#NOT INCLUDING
 ##Natural enemy evenness linear model
-evenmodel.n <- lm(evenness~Date + Site + design + Trap, data=greenroofNE)  #AIC = 72
+evenmodel.n <- lmer(evenness~Date + design + Trap + (1|Site:Replicate), data=greenroofNE)  #AIC = 100
 summary(evenmodel.n)
 AIC(evenmodel.n)
 anova(evenmodel.n) 
 
 even.emm<-emmeans(evenmodel.n,pairwise~design) 
 even.emm
-#results: difference between green roofs (p = 0.7846)
+#results: no difference between SE and BE (p = 0.8911)
 even.cld<-multcomp::cld(even.emm, alpha = 0.05, Letters = LETTERS)
 even.cld
 
 even.emm.t<-emmeans(evenmodel.n,pairwise~Trap) 
 even.emm.t
-#results: sticky cards sig greater evenness
+#results: no difference between any trap types
 even.cld.t<-multcomp::cld(even.emm.t, alpha = 0.05, Letters = LETTERS)
 even.cld.t 
 
@@ -2234,9 +2238,8 @@ evenness.plot.n_gr
 ###
 #mush together plots
 library(ggpubr) 
-naturalenemy.gr_boxplot <- ggarrange(richness.plot.n_gr, abundance.plot.n_gr, diversity.plot.n_gr, evenness.plot.n_gr,
-                                  #labels = c("A", "B", "C", "D"),
-                                  ncol = 1, nrow = 4,
+naturalenemy.gr_boxplot <- ggarrange(richness.plot.n_gr, diversity.plot.n_gr, 
+                                  ncol = 1, nrow = 2,
                                   common.legend = TRUE, legend = "bottom")
 naturalenemy.gr_boxplot
 
