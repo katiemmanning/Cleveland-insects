@@ -706,7 +706,7 @@ str(com.matrix)
 rowSums(com.matrix)
 
 #ordination by NMDS
-NMDS<-metaMDS(com.matrix, distance="bray", k=2, autotransform=TRUE, trymax=300)
+NMDS<-metaMDS(com.matrix, distance="jaccard", k=2, autotransform=TRUE, trymax=300)
 NMDS
 ###stress = 0.20
 stressplot(NMDS)
@@ -764,7 +764,7 @@ str(com.matrix_SE)
 rowSums(com.matrix_SE)
 
 #ordination by NMDS
-NMDS_SE<-metaMDS(com.matrix_SE, distance="bray", k=2, autotransform=TRUE, trymax=300)
+NMDS_SE<-metaMDS(com.matrix_SE, distance="jaccard", k=2, autotransform=TRUE, trymax=300)
 NMDS_SE
 ###stress = 0.18
 stressplot(NMDS_SE)
@@ -808,7 +808,7 @@ str(com.matrix_BE)
 rowSums(com.matrix_BE)
 
 #ordination by NMDS
-NMDS_BE<-metaMDS(com.matrix_BE, distance="bray", k=2, autotransform=TRUE, trymax=300)
+NMDS_BE<-metaMDS(com.matrix_BE, distance="jaccard", k=2, autotransform=TRUE, trymax=300)
 NMDS_BE
 ###stress = 0.18
 stressplot(NMDS_BE)
@@ -874,7 +874,7 @@ str(com.matrix_gr)
 rowSums(com.matrix_gr)
 
 #ordination by NMDS
-NMDS_gr<-metaMDS(com.matrix_gr, distance="bray", k=2, autotransform=TRUE, trymax=300)
+NMDS_gr<-metaMDS(com.matrix_gr, distance="jaccard", k=2, autotransform=TRUE, trymax=300)
 NMDS_gr
 ###stress = 0.16
 stressplot(NMDS_gr)
@@ -898,7 +898,7 @@ legend(0.375,0.815, title=NULL, pch=c(18,15), col=c("#CC79A7","#F0E442"), cex=1.
 #bootstrapping and testing for differences between the groups (BE v SE)
 fit<-adonis(com.matrix_gr ~ design, data = env.matrix_gr, permutations = 999, method="bray")
 fit
-#P=0.732
+#P=0.703
 
 #check assumption of homogeneity of multivariate dispersion 
 #P-value greater than 0.05 means assumption has been met
