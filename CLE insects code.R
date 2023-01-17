@@ -1146,32 +1146,32 @@ P <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects
 NE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/natural%20enemies_2019%20and%202021.csv", na.strings = NULL)
 
 #To obtain richness counts
-P.rowsums <- rowSums(P[,5:7]>0)
+P.rowsums <- rowSums(P[,6:8]>0)
 P$richness <- P.rowsums
 
-NE.rowsums <- rowSums(NE[,5:14]>0)
+NE.rowsums <- rowSums(NE[,6:15]>0)
 NE$richness <- NE.rowsums
 
 #To obtain abundance counts
-P.abun <- rowSums(P[,5:7])
+P.abun <- rowSums(P[,6:8])
 P$abundance <- P.abun
 
-NE.abun <- rowSums(NE[,5:14])
+NE.abun <- rowSums(NE[,6:15])
 NE$abundance <- NE.abun
 
 library(vegan)
 #calculate Shannon diversity
-P.diversity <-diversity(P[,5:7])
+P.diversity <-diversity(P[,6:8])
 P$diversity <-P.diversity
 
-NE.diversity <-diversity(NE[,5:14])
+NE.diversity <-diversity(NE[,6:15])
 NE$diversity <-NE.diversity
 
 #calculate Evenness
-P.evenness <-P.diversity/log(specnumber(P[,5:7]))
+P.evenness <-P.diversity/log(specnumber(P[,6:8]))
 P$evenness <- P.evenness
 
-NE.evenness <-NE.diversity/log(specnumber(NE[,5:14]))
+NE.evenness <-NE.diversity/log(specnumber(NE[,6:15]))
 NE$evenness <- NE.evenness
 
 summary(P)
@@ -1181,8 +1181,8 @@ str(NE)
 
 library (emmeans) #for pairwise comparisons
 
-##Pollinator richness linear model
-richmodel.p <- lm(richness~Date + Site + sitetype + Trap, data=P)  #AIC = 764
+##Pollinator richness linear mixed effect model
+richmodel.p <- lmer(richness~Date + sitetype + Trap + (1|Site:Replicate), data=P)  #AIC = 813
 summary(richmodel.p)
 AIC(richmodel.p)
 anova(richmodel.p) 
@@ -1192,12 +1192,6 @@ rich.emm
 #results: difference between natural (higher) and green roofs (p < 0.0001)
 rich.cld<-multcomp::cld(rich.emm, alpha = 0.05, Letters = LETTERS)
 rich.cld 
-
-rich.emm.s<-emmeans(richmodel.p,pairwise~Site) 
-rich.emm.s
-#results: 
-rich.cld.s<-multcomp::cld(rich.emm.s, alpha = 0.05, Letters = LETTERS)
-rich.cld.s 
 
 rich.emm.t<-emmeans(richmodel.p,pairwise~Trap) 
 rich.emm.t
@@ -1221,7 +1215,7 @@ qqnorm(resid(richmodel.p))
 qqline(resid(richmodel.p))
 
 plot(simulateResiduals(richmodel.p)) # another way to check for normality and homogeneity of variance
-#KS test: p = 0.003 SIG 
+#KS test: p = 0.00027 SIG 
 #dispersion test: p = 
 #outlier test: p = 
 #no significant problems detected 
@@ -1234,23 +1228,18 @@ influenceIndexPlot(richmodel.p, vars = c("Cook"), id = list(n = 3))
 
 #
 
+#NOT INCLUDING
 ##Pollinator abundance linear model
-abunmodel.p <- lm(abundance~Date + Site + sitetype + Trap, data=P)  #AIC = 2578
+abunmodel.p <- lmer(abundance~Date + sitetype + Trap + (1|Site:Replicate), data=P)  #AIC = 2562
 summary(abunmodel.p)
 AIC(abunmodel.p)
 anova(abunmodel.p)
 
 abun.emm<-emmeans(abunmodel.p,pairwise~sitetype) 
 abun.emm
-#results: difference between natural (higher) and green roofs (p=0.0006)
+#results: difference between natural (higher) and green roofs (p=0.0021)
 abun.cld<-multcomp::cld(abun.emm, alpha = 0.05, Letters = LETTERS)
 abun.cld 
-
-abun.emm.s<-emmeans(abunmodel.p,pairwise~Site) 
-abun.emm.s
-#results: no diff btw most
-abun.cld.s<-multcomp::cld(abun.emm.s, alpha = 0.05, Letters = LETTERS)
-abun.cld.s 
 
 abun.emm.t<-emmeans(abunmodel.p,pairwise~Trap) 
 abun.emm.t
@@ -1289,22 +1278,16 @@ influenceIndexPlot(abunmodel.p, vars = c("Cook"), id = list(n = 3))
 #
 
 ##Pollinator diversity linear model
-divmodel.p <- lm(diversity~Date + Site + sitetype + Trap, data=P)  #AIC = -165
+divmodel.p <- lmer(diversity~Date + sitetype + Trap + (1|Site:Replicate), data=P)  #AIC = -101
 summary(divmodel.p)
 AIC(divmodel.p)
 anova(divmodel.p)
 
 div.emm<-emmeans(divmodel.p,pairwise~sitetype) 
 div.emm
-#results: difference between natural and green roofs (p=0.0037) - higher in natural
+#results: difference between natural and green roofs (p=0.0099) - higher in natural
 div.cld<-multcomp::cld(div.emm, alpha = 0.05, Letters = LETTERS)
 div.cld 
-
-div.emm.s<-emmeans(divmodel.p,pairwise~Site) 
-div.emm.s
-#results: no diff btw most
-div.cld.s<-multcomp::cld(div.emm.s, alpha = 0.05, Letters = LETTERS)
-div.cld.s 
 
 div.emm.t<-emmeans(divmodel.p,pairwise~Trap) 
 div.emm.t
@@ -1329,7 +1312,7 @@ qqline(resid(divmodel.p))
 
 plot(simulateResiduals(divmodel.p)) # another way to check for normailty and homogeneity of variance
 #KS test: p = 0 *SIG
-#dispersion test: p = 0.616
+#dispersion test: p = 0.664
 #outlier test: p = 5e-05 *SIG
 #no significant problems detected  
 
@@ -1341,23 +1324,18 @@ influenceIndexPlot(divmodel.p, vars = c("Cook"), id = list(n = 3))
 
 #
 
+#NOT INCLUDING
 ##Pollinator evenness linear model
-evenmodel.p <- lm(evenness~Date + Site + sitetype + Trap, data=P)  #AIC = 68
+evenmodel.p <- lmer(evenness~Date + sitetype + Trap + (1|Site:Replicate), data=P)  #AIC = 125
 summary(evenmodel.p)
 AIC(evenmodel.p)
 anova(evenmodel.p) 
 
 even.emm<-emmeans(evenmodel.p,pairwise~sitetype) 
 even.emm
-#results: difference between natural (greater) and green roofs (p = 0.0068)
+#results: difference between natural (greater) and green roofs (p = 0.0154)
 even.cld<-multcomp::cld(even.emm, alpha = 0.05, Letters = LETTERS)
 even.cld
-
-even.emm.s<-emmeans(evenmodel.p,pairwise~Site) 
-even.emm.s
-#results: no diff btw most 
-even.cld.s<-multcomp::cld(even.emm.s, alpha = 0.05, Letters = LETTERS)
-even.cld.s 
 
 even.emm.t<-emmeans(evenmodel.p,pairwise~Trap) 
 even.emm.t
@@ -1455,9 +1433,8 @@ evenness.plot.p
 ###
 #mush together plots
 library(ggpubr) 
-pollinator_boxplot <- ggarrange(richness.plot.p, abundance.plot.p, diversity.plot.p, evenness.plot.p,
-                             #labels = c("A", "B", "C", "D"),
-                             ncol = 1, nrow = 4,
+pollinator_boxplot <- ggarrange(richness.plot.p, diversity.plot.p, 
+                             ncol = 1, nrow = 2,
                              common.legend = TRUE, legend = "bottom")
 pollinator_boxplot
 
@@ -1468,26 +1445,20 @@ dev.off()
 ##
 
 ##Natural enemy richness linear model
-richmodel.n <- lm(richness~Date + Site + sitetype + Trap, data=NE)  #AIC = 1010
+richmodel.n <- lmer(richness~Date + sitetype + Trap + (1|Site:Replicate), data=NE)  #AIC = 1104
 summary(richmodel.n)
 AIC(richmodel.n)
 anova(richmodel.n) 
 
 rich.emm<-emmeans(richmodel.n,pairwise~sitetype) #comparing natural vs GR
 rich.emm
-#results: difference between natural (higher) and green roofs (p < 0.0001)
+#results: difference between natural (higher) and green roofs (p = 0.115)
 rich.cld<-multcomp::cld(rich.emm, alpha = 0.05, Letters = LETTERS)
 rich.cld 
 
-rich.emm.s<-emmeans(richmodel.n,pairwise~Site) 
-rich.emm.s
-#results: 
-rich.cld.s<-multcomp::cld(rich.emm.s, alpha = 0.05, Letters = LETTERS)
-rich.cld.s 
-
 rich.emm.t<-emmeans(richmodel.n,pairwise~Trap) 
 rich.emm.t
-#results: significant difference between all trap types, except bowl-ramp - highest richness w/ sticky, then ramp
+#results: no difference between any except bowl-ramp and ramp-sticky
 rich.cld.t<-multcomp::cld(rich.emm.t, alpha = 0.05, Letters = LETTERS)
 rich.cld.t 
 
@@ -1507,9 +1478,9 @@ qqnorm(resid(richmodel.n))
 qqline(resid(richmodel.n))
 
 plot(simulateResiduals(richmodel.n)) # another way to check for normality and homogeneity of variance
-#KS test: p = 0.2462
-#dispersion test: p = 0.576
-#outlier test: p = 0.15958
+#KS test: p = SIG
+#dispersion test: p = 0.608
+#outlier test: p = 1
 #no significant problems detected 
 
 densityPlot(rstudent(richmodel.n)) # check density estimate of the distribution of residuals
@@ -1520,27 +1491,22 @@ influenceIndexPlot(richmodel.n, vars = c("Cook"), id = list(n = 3))
 
 #
 
+#NOT INCLUDING
 ##Natural enemy abundance linear model
-abunmodel.n <- lm(abundance~Date + Site + sitetype + Trap, data=NE)  #AIC = 2747
+abunmodel.n <- lmer(abundance~Date + sitetype + Trap + (1|Site:Replicate), data=NE)  #AIC = 2749
 summary(abunmodel.n)
 AIC(abunmodel.n)
 anova(abunmodel.n)
 
 abun.emm<-emmeans(abunmodel.n,pairwise~sitetype) 
 abun.emm
-#results: difference between natural (higher) and green roofs (p=0.0006)
+#results: difference between natural (higher) and green roofs (p=0.0057)
 abun.cld<-multcomp::cld(abun.emm, alpha = 0.05, Letters = LETTERS)
 abun.cld 
 
-abun.emm.s<-emmeans(abunmodel.n,pairwise~Site) 
-abun.emm.s
-#results: no diff btw most
-abun.cld.s<-multcomp::cld(abun.emm.s, alpha = 0.05, Letters = LETTERS)
-abun.cld.s 
-
 abun.emm.t<-emmeans(abunmodel.n,pairwise~Trap) 
 abun.emm.t
-#results: sticky cards sig diff from all other traps, all others same - highest abun w/ sticky then ramp (but bowl is really close)
+#results: no difference between any trap type
 abun.cld.t<-multcomp::cld(abun.emm.t, alpha = 0.05, Letters = LETTERS)
 abun.cld.t 
 
@@ -1574,26 +1540,20 @@ influenceIndexPlot(abunmodel.n, vars = c("Cook"), id = list(n = 3))
 #
 
 ##Natural enemy diversity linear model
-divmodel.n <- lm(diversity~Date + Site + sitetype + Trap, data=NE)  #AIC = 184
+divmodel.n <- lmer(diversity~Date + sitetype + Trap + (1|Site:Replicate), data=NE)  #AIC = 275
 summary(divmodel.n)
 AIC(divmodel.n)
 anova(divmodel.n)
 
 div.emm<-emmeans(divmodel.n,pairwise~sitetype) 
 div.emm
-#results: difference between natural and green roofs (p=0.0001) - higher in natural
+#results: difference between natural (higher) and green roofs (p=0.0114) 
 div.cld<-multcomp::cld(div.emm, alpha = 0.05, Letters = LETTERS)
 div.cld 
 
-div.emm.s<-emmeans(divmodel.n,pairwise~Site) 
-div.emm.s
-#results: 
-div.cld.s<-multcomp::cld(div.emm.s, alpha = 0.05, Letters = LETTERS)
-div.cld.s 
-
 div.emm.t<-emmeans(divmodel.n,pairwise~Trap) 
 div.emm.t
-#results: sticky cards sig diff from all other traps, all others same - highest div w/ sticky then ramp 
+#results: no difference except between bowl-ramp and ramp-sticky (maybe -- p=0.0564) 
 div.cld.t<-multcomp::cld(div.emm.t, alpha = 0.05, Letters = LETTERS)
 div.cld.t 
 
@@ -1613,9 +1573,9 @@ qqnorm(resid(divmodel.n))
 qqline(resid(divmodel.n))
 
 plot(simulateResiduals(divmodel.n)) # another way to check for normailty and homogeneity of variance
-#KS test: p = 
+#KS test: p = SIG
 #dispersion test: p = 
-#outlier test: p =  *SIG
+#outlier test: p =
 #no significant problems detected  
 
 densityPlot(rstudent(divmodel.n)) # check density estimate of the distribution of residuals
@@ -1626,27 +1586,22 @@ influenceIndexPlot(divmodel.n, vars = c("Cook"), id = list(n = 3))
 
 #
 
+#NOT INCLUDING
 ##Natural enemy evenness linear model
-evenmodel.n <- lm(evenness~Date + Site + sitetype + Trap, data=NE)  #AIC = 148
+evenmodel.n <- lmer(evenness~Date + sitetype + Trap + (1|Site:Replicate), data=NE)  #AIC = 219
 summary(evenmodel.n)
 AIC(evenmodel.n)
 anova(evenmodel.n) 
 
 even.emm<-emmeans(evenmodel.n,pairwise~sitetype) 
 even.emm
-#results: difference between natural (greater) and green roofs (p = 0.0016)
+#results: difference between natural (greater) and green roofs (p = 0.0065)
 even.cld<-multcomp::cld(even.emm, alpha = 0.05, Letters = LETTERS)
 even.cld
 
-even.emm.s<-emmeans(evenmodel.n,pairwise~Site) 
-even.emm.s
-#results: no diff btw most 
-even.cld.s<-multcomp::cld(even.emm.s, alpha = 0.05, Letters = LETTERS)
-even.cld.s 
-
 even.emm.t<-emmeans(evenmodel.n,pairwise~Trap) 
 even.emm.t
-#results: Sig diff btw all, except bowl-ramp -- sticky has greatest evenness, followed by ramp
+#results: Sig diff for all ramp traps (lowest) - same for all other comparisons
 even.cld.t<-multcomp::cld(even.emm.t, alpha = 0.05, Letters = LETTERS)
 even.cld.t 
 
@@ -1740,9 +1695,8 @@ evenness.plot.n
 ###
 #mush together plots
 library(ggpubr) 
-naturalenemy_boxplot <- ggarrange(richness.plot.n, abundance.plot.n, diversity.plot.n, evenness.plot.n,
-                                #labels = c("A", "B", "C", "D"),
-                                ncol = 1, nrow = 4,
+naturalenemy_boxplot <- ggarrange(richness.plot.n, diversity.plot.n, 
+                                ncol = 1, nrow = 2,
                                 common.legend = TRUE, legend = "bottom")
 naturalenemy_boxplot
 
