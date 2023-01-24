@@ -846,7 +846,7 @@ ordiellipse(NMDS_SE, env.matrix_SE$type, draw="polygon", col="#F0E442",kind="sd"
 ordiellipse(NMDS_SE, env.matrix_SE$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Ground-level")
 points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="Ground-level"),pch=19, col="#009E73")
 points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="SE"), pch=15, col="#F0E442")
-legend(-0.23,1.38, title=NULL, pch=c(19,15), col=c("#009E73","#F0E442"), cex=1.5, legend=c("Ground-level", "SE"))
+legend(-0.78,1.9, title=NULL, pch=c(19,15), col=c("#009E73","#F0E442"), cex=1.5, legend=c("Ground-level", "SE"))
 
 plot(NMDS_BE, disp='sites', type="n")
 title(main="B", adj = 0.02, line = -2, cex.main=1.5)
@@ -854,7 +854,7 @@ ordiellipse(NMDS_BE, env.matrix_BE$type, draw="polygon", col="#CC79A7",kind="sd"
 ordiellipse(NMDS_BE, env.matrix_BE$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Ground-level")
 points(NMDS_BE, display="sites", select=which(env.matrix_BE$type=="Ground-level"),pch=19, col="#009E73")
 points(NMDS_BE, display="sites", select=which(env.matrix_BE$type=="BE"), pch=18, col="#CC79A7")
-legend(0.022,1.2, title=NULL, pch=c(19,18), col=c("#009E73","#CC79A7"), cex=1.5, legend=c("Ground-level", "BE"))
+legend(-0.32,1.525, title=NULL, pch=c(19,18), col=c("#009E73","#CC79A7"), cex=1.5, legend=c("Ground-level", "BE"))
 dev.off()
 ###
 
@@ -943,7 +943,7 @@ anova(betadisper(distances_data, env.matrix_gr$Site))
 ###
 
 #merge allbugs and GR NMDSs into one figure and print to PDF
-pdf("allbugs+grbugs.pdf", height=6.5, width=13)
+pdf("allbugs+grbugs NMDSs.pdf", height=6.5, width=13)
 par(mfrow=c(1,2), mar=c(4.1, 4.8, 1.5, 8.1),xpd=TRUE) 
 
 plot(NMDS, disp='sites', type="n")
@@ -952,7 +952,7 @@ ordiellipse(NMDS, env.matrix$habitat, draw="polygon", col="#E69F00",kind="sd", c
 ordiellipse(NMDS, env.matrix$habitat, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Ground-level")
 points(NMDS, display="sites", select=which(env.matrix$habitat=="Ground-level"),pch=19, col="#009E73")
 points(NMDS, display="sites", select=which(env.matrix$habitat=="Greenroof"), pch=17, col="#E69F00")
-legend(-0.253,1.21, title=NULL, pch=c(19,17), col=c("#009E73","#E69F00"), cex=1.5, legend=c("Ground-level", "Greenroof"))
+legend(-0.53,1.535, title=NULL, pch=c(19,17), col=c("#009E73","#E69F00"), cex=1.5, legend=c("Ground-level", "Greenroof"))
 
 plot(NMDS_gr, disp='sites', type="n")
 title(main="B", adj = 0.02, line = -2, cex.main=1.5)
@@ -960,7 +960,7 @@ ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#F0E442",kind="s
 ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "BE")
 points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="BE"),pch=18, col="#CC79A7")
 points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="SE"), pch=15, col="#F0E442")
-legend(0.206,1.297, title=NULL, pch=c(18,15), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("BE", "SE"))
+legend(0.255,1.615, title=NULL, pch=c(18,15), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("BE", "SE"))
 dev.off()
 
 ###
