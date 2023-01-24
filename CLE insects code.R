@@ -20,9 +20,9 @@ bowlramp19 <- rbind.fill (bowls19, ramps19)
 allbugs19 <-rbind.fill (bowlramp19, sticky19)
 
 #add column for natural vs green roof
-allbugs19$sitetype<-ifelse(allbugs19$Site=="SSH", "Natural",
-                      ifelse(allbugs19$Site=="DGM", "Natural",
-                          ifelse(allbugs19$Site=="BFB", "Natural", "Greenroof")))
+allbugs19$habitat<-ifelse(allbugs19$Site=="SSH", "Ground-level",
+                      ifelse(allbugs19$Site=="DGM", "Ground-level",
+                          ifelse(allbugs19$Site=="BFB", "Ground-level", "Greenroof")))
 str(allbugs19)
 
 #To obtain richness counts
@@ -47,15 +47,15 @@ allbugs19$evenness <- evenness
 summary(allbugs19)
 str(allbugs19)
 
-#add data subset for green roof sites
-greenroofbugs19 <- allbugs19[ which(allbugs19$sitetype=="Greenroof"), ]
+#add data subset for green roof 
+greenroofbugs19 <- allbugs19[ which(allbugs19$habitat=="Greenroof"), ]
 #add column for green roof functional intent (stormwater-energy and biodiversity-ecological)
 greenroofbugs19$design<-ifelse(greenroofbugs19$Site=="EWB", "SE",
                                 ifelse(greenroofbugs19$Site=="WSC", "SE", "BE"))
 str(greenroofbugs19)
 
 #add data subset for natural sites
-naturalbugs19 <- allbugs19[ which(allbugs19$sitetype=="Natural"), ]
+naturalbugs19 <- allbugs19[ which(allbugs19$habitat=="Ground-level"), ]
 str(naturalbugs19)
 
 ######
@@ -81,9 +81,9 @@ bowljar21 <- rbind.fill (bowls21, jars21)
 allbugs21 <-rbind.fill (bowljar21, sticky21)
 
 #add column for natural vs green roof
-allbugs21$sitetype<-ifelse(allbugs21$Site=="SSH", "Natural",
-                           ifelse(allbugs21$Site=="DGM", "Natural",
-                                  ifelse(allbugs21$Site=="BFB", "Natural", "Greenroof")))
+allbugs21$habitat<-ifelse(allbugs21$Site=="SSH", "Ground-level",
+                           ifelse(allbugs21$Site=="DGM", "Ground-level",
+                                  ifelse(allbugs21$Site=="BFB", "Ground-level", "Greenroof")))
 str(allbugs21)
 
 #To obtain richness counts
@@ -105,15 +105,15 @@ allbugs21$evenness <- evenness
 summary(allbugs21)
 str(allbugs21)
 
-#add data subset for green roof sites
-greenroofbugs21 <- allbugs21[ which(allbugs21$sitetype=="Greenroof"), ]
+#add data subset for green roof 
+greenroofbugs21 <- allbugs21[ which(allbugs21$habitat=="Greenroof"), ]
 #add column for green roof functional intent (stormwater-energy and biodiversity-ecological)
 greenroofbugs21$design<-ifelse(greenroofbugs21$Site=="EWB", "SE",
                                   ifelse(greenroofbugs21$Site=="WSC", "SE", "BE"))
 str(greenroofbugs21)
 
 #add data subset for natural sites
-naturalbugs21 <- allbugs21[ which(allbugs21$sitetype=="Natural"), ]
+naturalbugs21 <- allbugs21[ which(allbugs21$habitat=="Ground-level"), ]
 str(naturalbugs21)
 
 ###
@@ -139,14 +139,14 @@ library (jtools)
 library (interactions)
 
 ##richness linear model
-richmodel <- lmer(richness~Date + sitetype + Trap + (1|Site:Replicate), data=allbugs)  #AIC = 1774
+richmodel <- lmer(richness~Date + habitat + Trap + (1|Site:Replicate), data=allbugs)  #AIC = 1774
 summary(richmodel)
 AIC(richmodel)
 anova(richmodel) 
 
-rich.emm<-emmeans(richmodel,pairwise~sitetype) #comparing natural vs GR
+rich.emm<-emmeans(richmodel,pairwise~habitat) #comparing ground-level vs GR
 rich.emm
-#results: difference between natural (higher) and green roofs (p = 0.03)
+#results: difference between ground-level (higher) and green roofs (p = 0.03)
 rich.cld<-multcomp::cld(rich.emm, alpha = 0.05, Letters = LETTERS)
 rich.cld 
 
@@ -187,12 +187,12 @@ influenceIndexPlot(richmodel, vars = c("Cook"), id = list(n = 3))
 
 #NOT INCLUDING
 ##abundance linear model
-abunmodel <- lmer(abundance~Date + sitetype + Trap + (1|Site:Replicate), data=allbugs)  #AIC = 6190
+abunmodel <- lmer(abundance~Date + habitat + Trap + (1|Site:Replicate), data=allbugs)  #AIC = 6190
 summary(abunmodel)
 AIC(abunmodel)
 anova(abunmodel)
 
-abun.emm<-emmeans(abunmodel,pairwise~sitetype) 
+abun.emm<-emmeans(abunmodel,pairwise~habitat) 
 abun.emm
 #results: difference between natural (higher) and green roofs (p=0.0469)
 abun.cld<-multcomp::cld(abun.emm, alpha = 0.05, Letters = LETTERS)
@@ -235,14 +235,14 @@ influenceIndexPlot(abunmodel, vars = c("Cook"), id = list(n = 3))
 #
 
 ##diversity linear model
-divmodel <- lmer(diversity~Date + sitetype + Trap + (1|Site:Replicate), data=allbugs)  #AIC = 548
+divmodel <- lmer(diversity~Date + habitat + Trap + (1|Site:Replicate), data=allbugs)  #AIC = 548
 summary(divmodel)
 AIC(divmodel)
 anova(divmodel)
 
-div.emm<-emmeans(divmodel,pairwise~sitetype) 
+div.emm<-emmeans(divmodel,pairwise~habitat) 
 div.emm
-#results: no difference between natural and green roofs (p=0.5287)
+#results: no difference between ground-level and green roofs (p=0.5287)
 div.cld<-multcomp::cld(div.emm, alpha = 0.05, Letters = LETTERS)
 div.cld 
 
@@ -283,12 +283,12 @@ influenceIndexPlot(divmodel, vars = c("Cook"), id = list(n = 3))
 
 #NOT INCLUDING
 ##evenness linear model
-evenmodel <- lmer(evenness~Date + sitetype + Trap + (1|Site:Replicate), data=allbugs)  #AIC = -76
+evenmodel <- lmer(evenness~Date + habitat + Trap + (1|Site:Replicate), data=allbugs)  #AIC = -76
 summary(evenmodel)
 AIC(evenmodel)
 anova(evenmodel) 
 
-even.emm<-emmeans(evenmodel,pairwise~sitetype) 
+even.emm<-emmeans(evenmodel,pairwise~habitat) 
 even.emm
 #results: difference between natural and green roofs (p = 0.0003)
 even.cld<-multcomp::cld(even.emm, alpha = 0.05, Letters = LETTERS)
@@ -332,7 +332,7 @@ influenceIndexPlot(evenmodel, vars = c("Cook"), id = list(n = 3))
 library (ggplot2)
 
 #site richness by site type
-richness.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = richness, fill=Site))+
+richness.plot<-ggplot(allbugs, aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = richness, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -345,7 +345,7 @@ richness.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Gree
 richness.plot
 
 #site abundance by site type
-abundance.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = abundance, fill=Site))+
+abundance.plot<-ggplot(allbugs, aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = abundance, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -359,7 +359,7 @@ abundance.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Gre
 abundance.plot
 
 #site diversity by site type
-diversity.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = diversity, fill=Site))+
+diversity.plot<-ggplot(allbugs, aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = diversity, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -372,7 +372,7 @@ diversity.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Gre
 diversity.plot
 
 #site evenness by site type
-evenness.plot<-ggplot(allbugs, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = evenness, fill=Site))+
+evenness.plot<-ggplot(allbugs, aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = evenness, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -725,19 +725,20 @@ include<-include[-1]
 plot(NMDS, disp='sites', type="n")
 #title(main="Arthropod community composition by site type", cex.main=1.5)
 #add ellipsoids with ordiellipse
-ordiellipse(NMDS, env.matrix$sitetype, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Greenroof")
-ordiellipse(NMDS, env.matrix$sitetype, draw="polygon", col="#E69F00",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
+ordiellipse(NMDS, env.matrix$habitat, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Greenroof")
+ordiellipse(NMDS, env.matrix$habitat, draw="polygon", col="#E69F00",kind="sd", conf=0.95, label=FALSE, show.groups = "Ground-level")
 #add data points
-points(NMDS, display="sites", select=which(env.matrix$sitetype=="Natural"),pch=19, col="#E69F00")
-points(NMDS, display="sites", select=which(env.matrix$sitetype=="Greenroof"), pch=17, col="#009E73")
+points(NMDS, display="sites", select=which(env.matrix$habitat=="Ground-level"),pch=19, col="#E69F00")
+points(NMDS, display="sites", select=which(env.matrix$habitat=="Greenroof"), pch=17, col="#009E73")
 #add legend
-legend(0.92,0.68, title=NULL, pch=c(19,17), col=c("#E69F00","#009E73"), cex=1.5, legend=c("Natural", "Greenroof"))
+legend(0.92,0.68, title=NULL, pch=c(19,17), col=c("#E69F00","#009E73"), cex=1.5, legend=c("Ground-level", "Greenroof"))
+#NOT INCLUDING
 #add insect taxa as text
 ordilabel(NMDS, display="species", select =which (include==TRUE & pollinator == TRUE), cex=0.6, col="black", fill="white")
 ordilabel(NMDS, display="species", select =which (include==TRUE & natural_enemies == TRUE), cex=0.6, col="white", fill="black")
 
 #bootstrapping and testing for differences between the groups (regions)
-fit<-adonis(com.matrix ~ sitetype, data = env.matrix, permutations = 999, method="bray")
+fit<-adonis(com.matrix ~ habitat, data = env.matrix, permutations = 999, method="bray")
 fit
 #P=0.001
 
