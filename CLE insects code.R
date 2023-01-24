@@ -1553,7 +1553,7 @@ div.cld
 
 div.emm.t<-emmeans(divmodel.n,pairwise~Trap) 
 div.emm.t
-#results: no difference except between bowl-ramp and ramp-sticky (maybe -- p=0.0564) 
+#results: no difference except between bowl-ramp 
 div.cld.t<-multcomp::cld(div.emm.t, alpha = 0.05, Letters = LETTERS)
 div.cld.t 
 
