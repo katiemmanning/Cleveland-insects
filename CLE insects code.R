@@ -746,13 +746,13 @@ fit
 #check assumption of homogeneity of multivariate dispersion 
 #P-value greater than 0.05 means assumption has been met
 distances_data<-vegdist(com.matrix)
-anova(betadisper(distances_data, env.matrix$sitetype))
+anova(betadisper(distances_data, env.matrix$habitat))
 #P-value = 0.01 -- cannot assume homogeneity of multivariate dispersion
 
 ##
 
 #NMDS of natural versus SE green roof
-SE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_pooled_SE%20and%20natural.csv", na.strings=NULL)
+SE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_pooled_SE%20and%20ground-level.csv", na.strings=NULL)
 
 #Create matrix of environmental variables    
 env.matrix_SE<-SE[c(1:3)]
@@ -775,9 +775,9 @@ stressplot(NMDS_SE)
 plot(NMDS_SE, disp='sites', type="n")
 #add ellipsoids with ordiellipse
 ordiellipse(NMDS_SE, env.matrix_SE$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "SE")
-ordiellipse(NMDS_SE, env.matrix_SE$type, draw="polygon", col="#E69F00",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
+ordiellipse(NMDS_SE, env.matrix_SE$type, draw="polygon", col="#E69F00",kind="sd", conf=0.95, label=FALSE, show.groups = "Ground-level")
 #add data points
-points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="Natural"),pch=19, col="#E69F00")
+points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="Ground-level"),pch=19, col="#E69F00")
 points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="SE"), pch=17, col="#009E73")
 #add legend
 #legend(0.5,0.5, title=NULL, pch=c(19,17), col=c("#E69F00","#009E73"), cex=1.5, legend=c("Natural", "SE"))
@@ -785,7 +785,7 @@ points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="SE"), pch=17,
 #bootstrapping and testing for differences between the groups (SE and natural)
 fit<-adonis(com.matrix_SE ~ type, data = env.matrix_SE, permutations = 999, method="bray")
 fit
-#P=0.08
+#P=0.07
 
 #check assumption of homogeneity of multivariate dispersion 
 #P-value greater than 0.05 means assumption has been met
@@ -795,8 +795,8 @@ anova(betadisper(distances_data, env.matrix_SE$type))
 
 #
 
-#NMDS of natural versus BE green roof
-BE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_pooled_BE%20and%20natural.csv", na.strings=NULL)
+#NMDS of ground-level versus BE green roof
+BE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_pooled_BE%20and%20ground-level.csv", na.strings=NULL)
 
 #Create matrix of environmental variables    
 env.matrix_BE<-BE[c(1:3)]
@@ -818,14 +818,14 @@ stressplot(NMDS_BE)
 plot(NMDS_BE, disp='sites', type="n")
 #add ellipsoids with ordiellipse
 ordiellipse(NMDS_BE, env.matrix_BE$type, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "BE")
-ordiellipse(NMDS_BE, env.matrix_BE$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
+ordiellipse(NMDS_BE, env.matrix_BE$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Ground-level")
 #add data points
-points(NMDS_BE, display="sites", select=which(env.matrix_BE$type=="Natural"),pch=19, col="#009E73")
+points(NMDS_BE, display="sites", select=which(env.matrix_BE$type=="Ground-level"),pch=19, col="#009E73")
 points(NMDS_BE, display="sites", select=which(env.matrix_BE$type=="BE"), pch=17, col="#CC79A7")
 #add legend
 #legend(0.5,0.5, title=NULL, pch=c(19,17), col=c("#009E73","#CC79A7"), cex=1.5, legend=c("Natural", "BE"))
 
-#bootstrapping and testing for differences between the groups (BE and natural)
+#bootstrapping and testing for differences between the groups (BE and ground-level)
 fit<-adonis(com.matrix_BE ~ type, data = env.matrix_BE, permutations = 999, method="bray")
 fit
 #P=0.001
@@ -843,18 +843,18 @@ par(mfrow=c(1,2), mar=c(4.1, 4.8, 1.5, 8.1),xpd=TRUE)
 plot(NMDS_SE, disp='sites', type="n")
 title(main="A", adj = 0.02, line = -2, cex.main=1.5)
 ordiellipse(NMDS_SE, env.matrix_SE$type, draw="polygon", col="#F0E442",kind="sd", conf=0.95, label=FALSE, show.groups = "SE")
-ordiellipse(NMDS_SE, env.matrix_SE$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
-points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="Natural"),pch=19, col="#009E73")
+ordiellipse(NMDS_SE, env.matrix_SE$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Ground-level")
+points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="Ground-level"),pch=19, col="#009E73")
 points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="SE"), pch=15, col="#F0E442")
-legend(-0.23,1.38, title=NULL, pch=c(19,15), col=c("#009E73","#F0E442"), cex=1.5, legend=c("Natural", "SE"))
+legend(-0.23,1.38, title=NULL, pch=c(19,15), col=c("#009E73","#F0E442"), cex=1.5, legend=c("Ground-level", "SE"))
 
 plot(NMDS_BE, disp='sites', type="n")
 title(main="B", adj = 0.02, line = -2, cex.main=1.5)
 ordiellipse(NMDS_BE, env.matrix_BE$type, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "BE")
-ordiellipse(NMDS_BE, env.matrix_BE$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
-points(NMDS_BE, display="sites", select=which(env.matrix_BE$type=="Natural"),pch=19, col="#009E73")
+ordiellipse(NMDS_BE, env.matrix_BE$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Ground-level")
+points(NMDS_BE, display="sites", select=which(env.matrix_BE$type=="Ground-level"),pch=19, col="#009E73")
 points(NMDS_BE, display="sites", select=which(env.matrix_BE$type=="BE"), pch=18, col="#CC79A7")
-legend(0.022,1.2, title=NULL, pch=c(19,18), col=c("#009E73","#CC79A7"), cex=1.5, legend=c("Natural", "BE"))
+legend(0.022,1.2, title=NULL, pch=c(19,18), col=c("#009E73","#CC79A7"), cex=1.5, legend=c("Ground-level", "BE"))
 dev.off()
 ###
 
@@ -948,11 +948,11 @@ par(mfrow=c(1,2), mar=c(4.1, 4.8, 1.5, 8.1),xpd=TRUE)
 
 plot(NMDS, disp='sites', type="n")
 title(main="A", adj = 0.02, line = -2, cex.main=1.5)
-ordiellipse(NMDS, env.matrix$sitetype, draw="polygon", col="#E69F00",kind="sd", conf=0.95, label=FALSE, show.groups = "Greenroof")
-ordiellipse(NMDS, env.matrix$sitetype, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Natural")
-points(NMDS, display="sites", select=which(env.matrix$sitetype=="Natural"),pch=19, col="#009E73")
-points(NMDS, display="sites", select=which(env.matrix$sitetype=="Greenroof"), pch=17, col="#E69F00")
-legend(-0.253,1.21, title=NULL, pch=c(19,17), col=c("#009E73","#E69F00"), cex=1.5, legend=c("Natural", "Greenroof"))
+ordiellipse(NMDS, env.matrix$habitat, draw="polygon", col="#E69F00",kind="sd", conf=0.95, label=FALSE, show.groups = "Greenroof")
+ordiellipse(NMDS, env.matrix$habitat, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Ground-level")
+points(NMDS, display="sites", select=which(env.matrix$habitat=="Ground-level"),pch=19, col="#009E73")
+points(NMDS, display="sites", select=which(env.matrix$habitat=="Greenroof"), pch=17, col="#E69F00")
+legend(-0.253,1.21, title=NULL, pch=c(19,17), col=c("#009E73","#E69F00"), cex=1.5, legend=c("Ground-level", "Greenroof"))
 
 plot(NMDS_gr, disp='sites', type="n")
 title(main="B", adj = 0.02, line = -2, cex.main=1.5)
@@ -1184,14 +1184,14 @@ str(NE)
 library (emmeans) #for pairwise comparisons
 
 ##Pollinator richness linear mixed effect model
-richmodel.p <- lmer(richness~Date + sitetype + Trap + (1|Site:Replicate), data=P)  #AIC = 813
+richmodel.p <- lmer(richness~Date + habitat + Trap + (1|Site:Replicate), data=P)  #AIC = 813
 summary(richmodel.p)
 AIC(richmodel.p)
 anova(richmodel.p) 
 
-rich.emm<-emmeans(richmodel.p,pairwise~sitetype) #comparing natural vs GR
+rich.emm<-emmeans(richmodel.p,pairwise~habitat) #comparing ground-level vs GR
 rich.emm
-#results: difference between natural (higher) and green roofs (p < 0.0001)
+#results: difference between ground-level (higher) and green roofs (p < 0.0001)
 rich.cld<-multcomp::cld(rich.emm, alpha = 0.05, Letters = LETTERS)
 rich.cld 
 
@@ -1232,12 +1232,12 @@ influenceIndexPlot(richmodel.p, vars = c("Cook"), id = list(n = 3))
 
 #NOT INCLUDING
 ##Pollinator abundance linear model
-abunmodel.p <- lmer(abundance~Date + sitetype + Trap + (1|Site:Replicate), data=P)  #AIC = 2562
+abunmodel.p <- lmer(abundance~Date + habitat + Trap + (1|Site:Replicate), data=P)  #AIC = 2562
 summary(abunmodel.p)
 AIC(abunmodel.p)
 anova(abunmodel.p)
 
-abun.emm<-emmeans(abunmodel.p,pairwise~sitetype) 
+abun.emm<-emmeans(abunmodel.p,pairwise~habitat) 
 abun.emm
 #results: difference between natural (higher) and green roofs (p=0.0021)
 abun.cld<-multcomp::cld(abun.emm, alpha = 0.05, Letters = LETTERS)
@@ -1280,14 +1280,14 @@ influenceIndexPlot(abunmodel.p, vars = c("Cook"), id = list(n = 3))
 #
 
 ##Pollinator diversity linear model
-divmodel.p <- lmer(diversity~Date + sitetype + Trap + (1|Site:Replicate), data=P)  #AIC = -101
+divmodel.p <- lmer(diversity~Date + habitat + Trap + (1|Site:Replicate), data=P)  #AIC = -101
 summary(divmodel.p)
 AIC(divmodel.p)
 anova(divmodel.p)
 
-div.emm<-emmeans(divmodel.p,pairwise~sitetype) 
+div.emm<-emmeans(divmodel.p,pairwise~habitat) 
 div.emm
-#results: difference between natural and green roofs (p=0.0099) - higher in natural
+#results: difference between ground-level (higher) and green roofs (p=0.0099) 
 div.cld<-multcomp::cld(div.emm, alpha = 0.05, Letters = LETTERS)
 div.cld 
 
@@ -1328,14 +1328,14 @@ influenceIndexPlot(divmodel.p, vars = c("Cook"), id = list(n = 3))
 
 #NOT INCLUDING
 ##Pollinator evenness linear model
-evenmodel.p <- lmer(evenness~Date + sitetype + Trap + (1|Site:Replicate), data=P)  #AIC = 125
+evenmodel.p <- lmer(evenness~Date + habitat + Trap + (1|Site:Replicate), data=P)  #AIC = 125
 summary(evenmodel.p)
 AIC(evenmodel.p)
 anova(evenmodel.p) 
 
-even.emm<-emmeans(evenmodel.p,pairwise~sitetype) 
+even.emm<-emmeans(evenmodel.p,pairwise~habitat) 
 even.emm
-#results: difference between natural (greater) and green roofs (p = 0.0154)
+#results: difference between ground-level (greater) and green roofs (p = 0.0154)
 even.cld<-multcomp::cld(even.emm, alpha = 0.05, Letters = LETTERS)
 even.cld
 
@@ -1380,7 +1380,7 @@ library (ggplot2)
 #Pollinators
 
 #site richness by site type
-richness.plot.p<-ggplot(P, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = richness, fill=Site))+
+richness.plot.p<-ggplot(P, aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = richness, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -1393,7 +1393,7 @@ richness.plot.p<-ggplot(P, aes(x = factor(sitetype,level = c("Natural","Greenroo
 richness.plot.p
 
 #site abundance by site type
-abundance.plot.p<-ggplot(P, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = abundance, fill=Site))+
+abundance.plot.p<-ggplot(P, aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = abundance, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -1407,7 +1407,7 @@ abundance.plot.p<-ggplot(P, aes(x = factor(sitetype,level = c("Natural","Greenro
 abundance.plot.p
 
 #site diversity by site type
-diversity.plot.p<-ggplot(P, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = diversity, fill=Site))+
+diversity.plot.p<-ggplot(P, aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = diversity, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -1420,7 +1420,7 @@ diversity.plot.p<-ggplot(P, aes(x = factor(sitetype,level = c("Natural","Greenro
 diversity.plot.p
 
 #site evenness by site type
-evenness.plot.p<-ggplot(P, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = evenness, fill=Site))+
+evenness.plot.p<-ggplot(P, aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = evenness, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -1447,14 +1447,14 @@ dev.off()
 ##
 
 ##Natural enemy richness linear model
-richmodel.n <- lmer(richness~Date + sitetype + Trap + (1|Site:Replicate), data=NE)  #AIC = 1104
+richmodel.n <- lmer(richness~Date + habitat + Trap + (1|Site:Replicate), data=NE)  #AIC = 1104
 summary(richmodel.n)
 AIC(richmodel.n)
 anova(richmodel.n) 
 
-rich.emm<-emmeans(richmodel.n,pairwise~sitetype) #comparing natural vs GR
+rich.emm<-emmeans(richmodel.n,pairwise~habitat) #comparing ground-level vs GR
 rich.emm
-#results: difference between natural (higher) and green roofs (p = 0.0115)
+#results: difference between ground-level (higher) and green roofs (p = 0.0115)
 rich.cld<-multcomp::cld(rich.emm, alpha = 0.05, Letters = LETTERS)
 rich.cld 
 
@@ -1495,14 +1495,14 @@ influenceIndexPlot(richmodel.n, vars = c("Cook"), id = list(n = 3))
 
 #NOT INCLUDING
 ##Natural enemy abundance linear model
-abunmodel.n <- lmer(abundance~Date + sitetype + Trap + (1|Site:Replicate), data=NE)  #AIC = 2749
+abunmodel.n <- lmer(abundance~Date + habitat + Trap + (1|Site:Replicate), data=NE)  #AIC = 2749
 summary(abunmodel.n)
 AIC(abunmodel.n)
 anova(abunmodel.n)
 
-abun.emm<-emmeans(abunmodel.n,pairwise~sitetype) 
+abun.emm<-emmeans(abunmodel.n,pairwise~habitat) 
 abun.emm
-#results: difference between natural (higher) and green roofs (p=0.0057)
+#results: difference between ground-level (higher) and green roofs (p=0.0057)
 abun.cld<-multcomp::cld(abun.emm, alpha = 0.05, Letters = LETTERS)
 abun.cld 
 
@@ -1518,7 +1518,7 @@ dotchart(NE$abundance, main = "abundance") # way to visualize outliers
 with(NE, ad.test(abundance)) #Anderson-darling test for normality (good for small sample sizes), low p-value means assumption is violated
 #p-value = < 2.2e-16
 
-with(NE, bartlett.test(abundance ~ sitetype)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
+with(NE, bartlett.test(abundance ~ habitat)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
 #p-value = 6.409e-12
 
 plot(abunmodel.n) # check distribution of residuals
@@ -1542,14 +1542,14 @@ influenceIndexPlot(abunmodel.n, vars = c("Cook"), id = list(n = 3))
 #
 
 ##Natural enemy diversity linear model
-divmodel.n <- lmer(diversity~Date + sitetype + Trap + (1|Site:Replicate), data=NE)  #AIC = 275
+divmodel.n <- lmer(diversity~Date + habitat + Trap + (1|Site:Replicate), data=NE)  #AIC = 275
 summary(divmodel.n)
 AIC(divmodel.n)
 anova(divmodel.n)
 
-div.emm<-emmeans(divmodel.n,pairwise~sitetype) 
+div.emm<-emmeans(divmodel.n,pairwise~habitat) 
 div.emm
-#results: difference between natural (higher) and green roofs (p=0.0114) 
+#results: difference between ground-level (higher) and green roofs (p=0.0114) 
 div.cld<-multcomp::cld(div.emm, alpha = 0.05, Letters = LETTERS)
 div.cld 
 
@@ -1565,7 +1565,7 @@ dotchart(NE$diversity, main = "diversity") # way to visualize outliers
 with(NE, ad.test(diversity)) #Anderson-darling test for normality (good for small sample sizes), low p-value means assumption is violated
 #p-value < 2.2e-16
 
-with(NE, bartlett.test(diversity ~ sitetype)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
+with(NE, bartlett.test(diversity ~ habitat)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
 #p-value = 0.1929
 
 plot(divmodel.n) # check distribution of residuals
@@ -1590,14 +1590,14 @@ influenceIndexPlot(divmodel.n, vars = c("Cook"), id = list(n = 3))
 
 #NOT INCLUDING
 ##Natural enemy evenness linear model
-evenmodel.n <- lmer(evenness~Date + sitetype + Trap + (1|Site:Replicate), data=NE)  #AIC = 219
+evenmodel.n <- lmer(evenness~Date + habitat + Trap + (1|Site:Replicate), data=NE)  #AIC = 219
 summary(evenmodel.n)
 AIC(evenmodel.n)
 anova(evenmodel.n) 
 
-even.emm<-emmeans(evenmodel.n,pairwise~sitetype) 
+even.emm<-emmeans(evenmodel.n,pairwise~habitat) 
 even.emm
-#results: difference between natural (greater) and green roofs (p = 0.0065)
+#results: difference between ground-level (greater) and green roofs (p = 0.0065)
 even.cld<-multcomp::cld(even.emm, alpha = 0.05, Letters = LETTERS)
 even.cld
 
@@ -1613,7 +1613,7 @@ dotchart(NE$evenness, main = "evenness") # way to visualize outliers
 with(NE, ad.test(evenness)) #Anderson-darling test for normality (good for small sample sizes), low p-value means assumption is violated
 #p-value < 2.2e-16
 
-with(NE, bartlett.test(evenness ~ sitetype)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
+with(NE, bartlett.test(evenness ~ habitat)) #Bartlett test for homogeneity of variance, low p-value means assumption is violated
 #p-value = 0.2373
 
 plot(evenmodel.n) # check distribution of residuals
@@ -1642,7 +1642,7 @@ library (ggplot2)
 #Natural enemies
 
 #site richness by site type
-richness.plot.n<-ggplot(NE,aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = richness, fill=Site))+
+richness.plot.n<-ggplot(NE,aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = richness, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -1655,7 +1655,7 @@ richness.plot.n<-ggplot(NE,aes(x = factor(sitetype,level = c("Natural","Greenroo
 richness.plot.n
 
 #site abundance by site type
-abundance.plot.n<-ggplot(NE, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = abundance, fill=Site))+
+abundance.plot.n<-ggplot(NE, aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = abundance, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -1669,7 +1669,7 @@ abundance.plot.n<-ggplot(NE, aes(x = factor(sitetype,level = c("Natural","Greenr
 abundance.plot.n
 
 #site diversity by site type
-diversity.plot.n<-ggplot(NE, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = diversity, fill=Site))+
+diversity.plot.n<-ggplot(NE, aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = diversity, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -1682,7 +1682,7 @@ diversity.plot.n<-ggplot(NE, aes(x = factor(sitetype,level = c("Natural","Greenr
 diversity.plot.n
 
 #site evenness by site type
-evenness.plot.n<-ggplot(NE, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = evenness, fill=Site))+
+evenness.plot.n<-ggplot(NE, aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = evenness, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -1712,7 +1712,7 @@ dev.off()
 
 #Pollinators
 #add data subset for green roof sites
-greenroofpollinators <- P[ which(P$sitetype=="Greenroof"), ]
+greenroofpollinators <- P[ which(P$habitat=="Greenroof"), ]
 #add column for green roof functional intent (stormwater-energy and biodiversity-ecological)
 greenroofpollinators$design<-ifelse(greenroofpollinators$Site=="EWB", "SE",
                                ifelse(greenroofpollinators$Site=="WSC", "SE", "BE"))
@@ -1983,7 +1983,7 @@ dev.off()
 
 #Natural enemies
 #add data subset for green roof sites
-greenroofNE <- NE[ which(NE$sitetype=="Greenroof"), ]
+greenroofNE <- NE[ which(NE$habitat=="Greenroof"), ]
 #add column for green roof functional intent (stormwater-energy and biodiversity-ecological)
 greenroofNE$design<-ifelse(greenroofNE$Site=="EWB", "SE",
                                     ifelse(greenroofNE$Site=="WSC", "SE", "BE"))
@@ -2185,7 +2185,7 @@ library (ggplot2)
 #Natural enemies
 
 #site richness by site type
-richness.plot.n_gr<-ggplot(greenroofNE,aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = richness, fill=Site))+
+richness.plot.n_gr<-ggplot(greenroofNE,aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = richness, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -2198,7 +2198,7 @@ richness.plot.n_gr<-ggplot(greenroofNE,aes(x = factor(sitetype,level = c("Natura
 richness.plot.n_gr
 
 #site abundance by site type
-abundance.plot.n_gr<-ggplot(greenroofNE, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = abundance, fill=Site))+
+abundance.plot.n_gr<-ggplot(greenroofNE, aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = abundance, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -2212,7 +2212,7 @@ abundance.plot.n_gr<-ggplot(greenroofNE, aes(x = factor(sitetype,level = c("Natu
 abundance.plot.n_gr
 
 #site diversity by site type
-diversity.plot.n_gr<-ggplot(greenroofNE, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = diversity, fill=Site))+
+diversity.plot.n_gr<-ggplot(greenroofNE, aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = diversity, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
@@ -2225,7 +2225,7 @@ diversity.plot.n_gr<-ggplot(greenroofNE, aes(x = factor(sitetype,level = c("Natu
 diversity.plot.n_gr
 
 #site evenness by site type
-evenness.plot.n_gr<-ggplot(greenroofNE, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = evenness, fill=Site))+
+evenness.plot.n_gr<-ggplot(greenroofNE, aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = evenness, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
