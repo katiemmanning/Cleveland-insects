@@ -732,6 +732,7 @@ points(NMDS, display="sites", select=which(env.matrix$habitat=="Ground-level"),p
 points(NMDS, display="sites", select=which(env.matrix$habitat=="Greenroof"), pch=17, col="#009E73")
 #add legend
 legend(0.92,0.68, title=NULL, pch=c(19,17), col=c("#E69F00","#009E73"), cex=1.5, legend=c("Ground-level", "Greenroof"))
+
 #NOT INCLUDING
 #add insect taxa as text
 ordilabel(NMDS, display="species", select =which (include==TRUE & pollinator == TRUE), cex=0.6, col="black", fill="white")
