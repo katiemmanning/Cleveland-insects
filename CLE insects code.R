@@ -739,7 +739,7 @@ ordilabel(NMDS, display="species", select =which (include==TRUE & pollinator == 
 ordilabel(NMDS, display="species", select =which (include==TRUE & natural_enemies == TRUE), cex=0.6, col="white", fill="black")
 
 #bootstrapping and testing for differences between the groups (regions)
-fit<-adonis(com.matrix ~ habitat, data = env.matrix, permutations = 999, method="bray")
+fit<-adonis(com.matrix ~ habitat, data = env.matrix, permutations = 999, method="jaccard")
 fit
 #P=0.001
 
@@ -751,7 +751,7 @@ anova(betadisper(distances_data, env.matrix$habitat))
 
 ##
 
-#NMDS of natural versus SE green roof
+#NMDS of ground-level versus SE green roof
 SE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_pooled_SE%20and%20ground-level.csv", na.strings=NULL)
 
 #Create matrix of environmental variables    
@@ -782,8 +782,8 @@ points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="SE"), pch=17,
 #add legend
 #legend(0.5,0.5, title=NULL, pch=c(19,17), col=c("#E69F00","#009E73"), cex=1.5, legend=c("Natural", "SE"))
 
-#bootstrapping and testing for differences between the groups (SE and natural)
-fit<-adonis(com.matrix_SE ~ type, data = env.matrix_SE, permutations = 999, method="bray")
+#bootstrapping and testing for differences between the groups (SE and ground-level)
+fit<-adonis(com.matrix_SE ~ type, data = env.matrix_SE, permutations = 999, method="jaccard")
 fit
 #P=0.07
 
