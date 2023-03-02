@@ -363,7 +363,7 @@ diversity.plot<-ggplot(allbugs, aes(x = factor(habitat,level = c("Ground-level",
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
-  labs(title="", x="", y="Diversity")+
+  labs(title="", x="", y="Shannon Diversity")+
   #theme (plot.title = element_text(hjust=0.5))+
   #geom_text(data=div.cld.s, aes(y = 2, label = .group))+
   scale_fill_brewer(palette="Paired",name="Sites:",
@@ -389,7 +389,7 @@ evenness.plot
 library(ggpubr) 
 allbugs_boxplot <- ggarrange(richness.plot, diversity.plot,
                              #labels = c("A", "B"),
-                             ncol = 1, nrow = 2,
+                             ncol = 2, nrow = 1,
                              common.legend = TRUE, legend = "bottom")
 allbugs_boxplot
 
@@ -610,7 +610,7 @@ brewer.pal(n = 8, name = "Paired")
 richness.plot.d<-ggplot(greenroofbugs, aes(x = factor(design,level = c("SE","BE")), y = richness, fill=Site))+
   geom_boxplot()+
   theme_bw()+
-  theme(legend.position="bottom")+
+  #theme(legend.position="bottom")+
   labs(title="", x="", y="Richness")+
   #theme (plot.title = element_text(hjust=0.5))+
   scale_fill_manual(values=c("#B2DF8A","#FDBF6F","#33A02C","#FB9A99"),name="Sites:",
@@ -636,8 +636,8 @@ abundance.plot.d
 diversity.plot.d<-ggplot(greenroofbugs, aes(x = factor(design,level = c("SE","BE")), y = diversity, fill=Site))+
   geom_boxplot()+
   theme_bw()+
-  theme(legend.position="bottom")+
-  labs(title="", x="", y="Diversity")+
+  #theme(legend.position="bottom")+
+  labs(title="", x="", y="Shannon Diversity")+
   #theme (plot.title = element_text(hjust=0.5))+
   #geom_text(data=div.cld.s, aes(y = 2, label = .group))+
   scale_fill_manual(values=c("#B2DF8A","#FDBF6F","#33A02C","#FB9A99"),name="Sites:",
@@ -662,8 +662,8 @@ evenness.plot.d
 #mush together plots
 library(ggpubr) 
 greenroofbugs_boxplot <- ggarrange(richness.plot.d, diversity.plot.d,
-                             #labels = c("A", "B"),
-                             ncol = 1, nrow = 2,
+                             #labels = c("A", "B", "C", "D"),
+                             ncol = 2, nrow = 1,
                              common.legend = TRUE, legend = "bottom")
 greenroofbugs_boxplot
 
@@ -676,8 +676,8 @@ dev.off()
 #merge boxplots into one figure
 #can't figure out the legend
 multipanel_boxplot <- ggarrange(allbugs_boxplot, greenroofbugs_boxplot,
-                                   labels = c("A", "B"),
-                                   ncol = 2, nrow = 1,
+                                   labels = c("A","B"),
+                                   ncol = 1, nrow = 2,
                                    common.legend = TRUE, legend = "bottom")
 multipanel_boxplot
 
@@ -962,6 +962,44 @@ ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#CC79A7",kind="s
 points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="BE"),pch=18, col="#CC79A7")
 points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="SE"), pch=15, col="#F0E442")
 legend(0.255,1.615, title=NULL, pch=c(18,15), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("BE", "SE"))
+dev.off()
+
+##Put all 4 NMDSs together for manuscript
+
+pdf("All NMDSs.pdf", height=12, width=12)
+par(mfrow=c(2,2), mar=c(4.1, 4.8, 1.5, 8.1),xpd=TRUE) 
+
+plot(NMDS, disp='sites', type="n")
+title(main="A", adj = 0.02, line = -2, cex.main=1.5)
+ordiellipse(NMDS, env.matrix$habitat, draw="polygon", col="#E69F00",kind="sd", conf=0.95, label=FALSE, show.groups = "Greenroof")
+ordiellipse(NMDS, env.matrix$habitat, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Ground-level")
+points(NMDS, display="sites", select=which(env.matrix$habitat=="Ground-level"),pch=19, col="#009E73")
+points(NMDS, display="sites", select=which(env.matrix$habitat=="Greenroof"), pch=17, col="#E69F00")
+legend(-0.348,1.475, title=NULL, pch=c(19,17), col=c("#009E73","#E69F00"), cex=1.5, legend=c("Ground-level", "Greenroof"))
+
+plot(NMDS_gr, disp='sites', type="n")
+title(main="B", adj = 0.02, line = -2, cex.main=1.5)
+ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#F0E442",kind="sd", conf=0.95, label=FALSE, show.groups = "SE")
+ordiellipse(NMDS_gr, env.matrix_gr$design, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "BE")
+points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="BE"),pch=18, col="#CC79A7")
+points(NMDS_gr, display="sites", select=which(env.matrix_gr$design=="SE"), pch=15, col="#F0E442")
+legend(0.333,1.55, title=NULL, pch=c(18,15), col=c("#CC79A7","#F0E442"), cex=1.5, legend=c("BE", "SE"))
+
+plot(NMDS_SE, disp='sites', type="n")
+title(main="C", adj = 0.02, line = -2, cex.main=1.5)
+ordiellipse(NMDS_SE, env.matrix_SE$type, draw="polygon", col="#F0E442",kind="sd", conf=0.95, label=FALSE, show.groups = "SE")
+ordiellipse(NMDS_SE, env.matrix_SE$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Ground-level")
+points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="Ground-level"),pch=19, col="#009E73")
+points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="SE"), pch=15, col="#F0E442")
+legend(-0.56,1.82, title=NULL, pch=c(19,15), col=c("#009E73","#F0E442"), cex=1.5, legend=c("Ground-level", "SE"))
+
+plot(NMDS_BE, disp='sites', type="n")
+title(main="D", adj = 0.02, line = -2, cex.main=1.5)
+ordiellipse(NMDS_BE, env.matrix_BE$type, draw="polygon", col="#CC79A7",kind="sd", conf=0.95, label=FALSE, show.groups = "BE")
+ordiellipse(NMDS_BE, env.matrix_BE$type, draw="polygon", col="#009E73",kind="sd", conf=0.95, label=FALSE, show.groups = "Ground-level")
+points(NMDS_BE, display="sites", select=which(env.matrix_BE$type=="Ground-level"),pch=19, col="#009E73")
+points(NMDS_BE, display="sites", select=which(env.matrix_BE$type=="BE"), pch=18, col="#CC79A7")
+legend(-0.16,1.468, title=NULL, pch=c(19,18), col=c("#009E73","#CC79A7"), cex=1.5, legend=c("Ground-level", "BE"))
 dev.off()
 
 ###
