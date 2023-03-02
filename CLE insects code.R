@@ -738,8 +738,8 @@ legend(0.92,0.68, title=NULL, pch=c(19,17), col=c("#E69F00","#009E73"), cex=1.5,
 ordilabel(NMDS, display="species", select =which (include==TRUE & pollinator == TRUE), cex=0.6, col="black", fill="white")
 ordilabel(NMDS, display="species", select =which (include==TRUE & natural_enemies == TRUE), cex=0.6, col="white", fill="black")
 
-#bootstrapping and testing for differences between the groups (regions)
-fit<-adonis(com.matrix ~ habitat, data = env.matrix, permutations = 999, method="jaccard")
+#bootstrapping and testing for differences between the groups (GR and ground-level)
+fit<-adonis2(com.matrix ~ habitat, data = env.matrix, permutations = 999, method="jaccard")
 fit
 #P=0.001 - Sig
 
@@ -783,7 +783,7 @@ points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="SE"), pch=17,
 #legend(0.5,0.5, title=NULL, pch=c(19,17), col=c("#E69F00","#009E73"), cex=1.5, legend=c("Natural", "SE"))
 
 #bootstrapping and testing for differences between the groups (SE and ground-level)
-fit<-adonis(com.matrix_SE ~ type, data = env.matrix_SE, permutations = 999, method="jaccard")
+fit<-adonis2(com.matrix_SE ~ type, data = env.matrix_SE, permutations = 999, method="jaccard")
 fit
 #P=0.01 - Sig
 
@@ -826,7 +826,7 @@ points(NMDS_BE, display="sites", select=which(env.matrix_BE$type=="BE"), pch=17,
 #legend(0.5,0.5, title=NULL, pch=c(19,17), col=c("#009E73","#CC79A7"), cex=1.5, legend=c("Natural", "BE"))
 
 #bootstrapping and testing for differences between the groups (BE and ground-level)
-fit<-adonis(com.matrix_BE ~ type, data = env.matrix_BE, permutations = 999, method="jaccard")
+fit<-adonis2(com.matrix_BE ~ type, data = env.matrix_BE, permutations = 999, method="jaccard")
 fit
 #P=0.001
 
@@ -898,9 +898,9 @@ legend(0.375,0.815, title=NULL, pch=c(18,15), col=c("#CC79A7","#F0E442"), cex=1.
 #ordilabel(NMDS, display="species", select =which (include==TRUE & natural_enemies == TRUE), cex=0.6, col="white", fill="black")
 
 #bootstrapping and testing for differences between the groups (BE v SE)
-fit<-adonis(com.matrix_gr ~ design, data = env.matrix_gr, permutations = 999, method="jaccard")
+fit<-adonis2(com.matrix_gr ~ design, data = env.matrix_gr, permutations = 999, method="jaccard")
 fit
-#P=0.703
+#P=0.6
 
 #check assumption of homogeneity of multivariate dispersion 
 #P-value greater than 0.05 means assumption has been met
@@ -926,8 +926,8 @@ legend(0.375,0.815, title=NULL, pch=c(18,15, 19, 20), col=c("#F0E442", "#CC79A7"
 #ordilabel(NMDS, display="species", select =which (include==TRUE & pollinator == TRUE), cex=0.6, col="black", fill="white")
 #ordilabel(NMDS, display="species", select =which (include==TRUE & natural_enemies == TRUE), cex=0.6, col="white", fill="black")
 
-#bootstrapping and testing for differences between the groups (BE v SE)
-fit<-adonis(com.matrix_gr ~ Site, data = env.matrix_gr, permutations = 999, method="bray")
+#bootstrapping and testing for differences between the groups (GR sites)
+fit<-adonis2(com.matrix_gr ~ Site, data = env.matrix_gr, permutations = 999, method="bray")
 fit
 #P > 0.05  ~0.08
 
