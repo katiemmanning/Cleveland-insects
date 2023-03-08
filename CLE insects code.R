@@ -738,16 +738,19 @@ legend(0.92,0.68, title=NULL, pch=c(19,17), col=c("#E69F00","#009E73"), cex=1.5,
 ordilabel(NMDS, display="species", select =which (include==TRUE & pollinator == TRUE), cex=0.6, col="black", fill="white")
 ordilabel(NMDS, display="species", select =which (include==TRUE & natural_enemies == TRUE), cex=0.6, col="white", fill="black")
 
-#bootstrapping and testing for differences between the groups (GR and ground-level)
+#testing for differences between the groups (GR and ground-level) with adonis aka PERMANOVA
 fit<-adonis2(com.matrix ~ habitat, data = env.matrix, permutations = 999, method="jaccard")
 fit
-#P=0.001 - Sig
+#P=0.001 - groups have significantly different compositions
 
-#check assumption of homogeneity of multivariate dispersion 
+#check assumption of homogeneity of multivariate dispersion using an ANOVA on the multivariate dispersions (betadisper)
 #P-value greater than 0.05 means assumption has been met
-distances_data<-vegdist(com.matrix)
+distances_data<-vegdist(com.matrix, method="jaccard")
 anova(betadisper(distances_data, env.matrix$habitat))
 #P-value = 0.01 -- cannot assume homogeneity of multivariate dispersion
+
+#conclusion: ground-level and green roof habitats present heterogeneity among group dispersion (compositions vary differently) 
+            # and have significantly different compositions. 
 
 ##
 
@@ -785,13 +788,16 @@ points(NMDS_SE, display="sites", select=which(env.matrix_SE$type=="SE"), pch=17,
 #bootstrapping and testing for differences between the groups (SE and ground-level)
 fit<-adonis2(com.matrix_SE ~ type, data = env.matrix_SE, permutations = 999, method="jaccard")
 fit
-#P=0.01 - Sig
+#P=0.01 - groups have significantly different compositions
 
 #check assumption of homogeneity of multivariate dispersion 
 #P-value greater than 0.05 means assumption has been met
 distances_data<-vegdist(com.matrix_SE)
 anova(betadisper(distances_data, env.matrix_SE$type))
 #P-value = 0.006 -- cannot assume homogeneity of multivariate dispersion
+
+#conclusion: ground-level and SE green roof habitats present heterogeneity among group dispersion (compositions vary differently) 
+# and have significantly different compositions. 
 
 #
 
@@ -828,13 +834,18 @@ points(NMDS_BE, display="sites", select=which(env.matrix_BE$type=="BE"), pch=17,
 #bootstrapping and testing for differences between the groups (BE and ground-level)
 fit<-adonis2(com.matrix_BE ~ type, data = env.matrix_BE, permutations = 999, method="jaccard")
 fit
-#P=0.001
+#P=0.001 - groups have significantly different compositions
 
 #check assumption of homogeneity of multivariate dispersion 
 #P-value greater than 0.05 means assumption has been met
 distances_data<-vegdist(com.matrix_BE)
 anova(betadisper(distances_data, env.matrix_BE$type))
 #P-value = 0.20 -- assumes homogeneity of multivariate dispersion
+
+#conclusion: ground-level and BE green roof habitats present homogeneity among group dispersion (compositions vary similarly) 
+# but have significantly different compositions. 
+
+#
 
 #merge habitat and mitigation NMDSs into one figure
 pdf("design type NMDSs.pdf", height=6.5, width=13)
@@ -900,13 +911,18 @@ legend(0.375,0.815, title=NULL, pch=c(18,15), col=c("#CC79A7","#F0E442"), cex=1.
 #bootstrapping and testing for differences between the groups (BE v SE)
 fit<-adonis2(com.matrix_gr ~ design, data = env.matrix_gr, permutations = 999, method="jaccard")
 fit
-#P=0.6
+#P=0.6 - groups are compositionally similar 
 
 #check assumption of homogeneity of multivariate dispersion 
 #P-value greater than 0.05 means assumption has been met
 distances_data<-vegdist(com.matrix_gr)
 anova(betadisper(distances_data, env.matrix_gr$design))
 #P-value = 0.2024 -- assumes homogeneity of multivariate dispersion
+
+#conclusion: SE and BE green roof habitats present homogeneity among group dispersion (compositions vary similarly) 
+# and have similar compositions. 
+
+#
 
 #plot greenroof sites
 plot(NMDS_gr, disp='sites', type="n")
@@ -933,13 +949,16 @@ fit
 
 library (pairwiseAdonis)
 pairwise.adonis(com.matrix_gr, env.matrix_gr$Site)
-#WSC is sig diff from SNC and EWB
+#no sig differences
 
 #check assumption of homogeneity of multivariate dispersion 
 #P-value greater than 0.05 means assumption has been met
 distances_data<-vegdist(com.matrix_gr)
 anova(betadisper(distances_data, env.matrix_gr$Site))
 #P-value = 0.5663 -- assumes homogeneity of multivariate dispersion
+
+#conclusion: All green roof sites present homogeneity among group dispersion (compositions vary similarly) 
+# and have similar compositions. 
 
 ###
 
