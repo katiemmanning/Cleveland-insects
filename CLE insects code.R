@@ -674,7 +674,6 @@ dev.off()
 ###
 
 #merge boxplots into one figure
-#can't figure out the legend
 multipanel_boxplot <- ggarrange(allbugs_boxplot, greenroofbugs_boxplot,
                                    labels = c("A","B"),
                                    ncol = 1, nrow = 2,
@@ -1469,7 +1468,7 @@ diversity.plot.p<-ggplot(P, aes(x = factor(habitat,level = c("Ground-level","Gre
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
-  labs(title="", x="", y="Diversity")+
+  labs(title="", x="", y="Shannon Diversity")+
   #theme (plot.title = element_text(hjust=0.5))+
   #geom_text(data=div.cld.s, aes(y = 2, label = .group))+
   scale_fill_brewer(palette="Paired",name="Sites:",
@@ -1494,7 +1493,7 @@ evenness.plot.p
 #mush together plots
 library(ggpubr) 
 pollinator_boxplot <- ggarrange(richness.plot.p, diversity.plot.p, 
-                             ncol = 1, nrow = 2,
+                             ncol = 2, nrow = 1,
                              common.legend = TRUE, legend = "bottom")
 pollinator_boxplot
 
@@ -1731,7 +1730,7 @@ diversity.plot.n<-ggplot(NE, aes(x = factor(habitat,level = c("Ground-level","Gr
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
-  labs(title="", x="", y="Diversity")+
+  labs(title="", x="", y="Shannon Diversity")+
   #theme (plot.title = element_text(hjust=0.5))+
   #geom_text(data=div.cld.s, aes(y = 2, label = .group))+
   scale_fill_brewer(palette="Paired",name="Sites:",
@@ -1756,7 +1755,7 @@ evenness.plot.n
 #mush together plots
 library(ggpubr) 
 naturalenemy_boxplot <- ggarrange(richness.plot.n, diversity.plot.n, 
-                                ncol = 1, nrow = 2,
+                                ncol = 2, nrow = 1,
                                 common.legend = TRUE, legend = "bottom")
 naturalenemy_boxplot
 
@@ -1972,16 +1971,16 @@ library (ggplot2)
 #Pollinators
 
 #site richness by site type
-richness.plot.p_gr<-ggplot(greenroofpollinators, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = richness, fill=Site))+
+richness.plot.p_gr<-ggplot(greenroofpollinators, aes(x = factor(design,level = c("SE","BE")), y = richness, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
   labs(title="", x="", y="Richness")+
   #theme (plot.title = element_text(hjust=0.5))+
   #geom_text(data=rich.cld, aes(y = 25, label = .group))+
-  scale_fill_brewer(palette="Paired",name="Sites:",
-                    breaks=c("BFB", "DGM", "SSH", "EWB", "WSC", "HDB", "SNC"),
-                    labels=c("Bedford barren","Dusty goldenrod meadow", "Slate shale hill", "Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
+  scale_fill_manual(values=c("#B2DF8A","#FDBF6F","#33A02C","#FB9A99"),name="Sites:",
+                    breaks=c("EWB", "WSC", "HDB", "SNC"),
+                    labels=c("Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
 richness.plot.p_gr
 
 #site abundance by site type
@@ -1999,16 +1998,16 @@ abundance.plot.p_gr<-ggplot(greenroofpollinators, aes(x = factor(sitetype,level 
 abundance.plot.p_gr
 
 #site diversity by site type
-diversity.plot.p_gr<-ggplot(greenroofpollinators, aes(x = factor(sitetype,level = c("Natural","Greenroof")), y = diversity, fill=Site))+
+diversity.plot.p_gr<-ggplot(greenroofpollinators, aes(x = factor(design,level = c("SE","BE")), y = diversity, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
-  labs(title="", x="", y="Diversity")+
+  labs(title="", x="", y="Shannon Diversity")+
   #theme (plot.title = element_text(hjust=0.5))+
   #geom_text(data=div.cld.s, aes(y = 2, label = .group))+
-  scale_fill_brewer(palette="Paired",name="Sites:",
-                    breaks=c("BFB", "DGM", "SSH", "EWB", "WSC", "HDB", "SNC"),
-                    labels=c("Bedford barren","Dusty goldenrod meadow", "Slate shale hill", "Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
+  scale_fill_manual(values=c("#B2DF8A","#FDBF6F","#33A02C","#FB9A99"),name="Sites:",
+                    breaks=c("EWB", "WSC", "HDB", "SNC"),
+                    labels=c("Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
 diversity.plot.p_gr
 
 #site evenness by site type
@@ -2028,8 +2027,7 @@ evenness.plot.p_gr
 #mush together plots
 library(ggpubr) 
 pollinator.gr_boxplot <- ggarrange(richness.plot.p_gr, diversity.plot.p_gr, 
-                                #labels = c("A", "B", "C", "D"),
-                                ncol = 1, nrow = 2,
+                                ncol = 2, nrow = 1,
                                 common.legend = TRUE, legend = "bottom")
 pollinator.gr_boxplot
 
@@ -2243,16 +2241,16 @@ library (ggplot2)
 #Natural enemies
 
 #site richness by site type
-richness.plot.n_gr<-ggplot(greenroofNE,aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = richness, fill=Site))+
+richness.plot.n_gr<-ggplot(greenroofNE,aes(x = factor(design,level = c("SE","BE")), y = richness, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
   labs(title="", x="", y="Richness")+
   #theme (plot.title = element_text(hjust=0.5))+
   #geom_text(data=rich.cld, aes(y = 25, label = .group))+
-  scale_fill_brewer(palette="Paired",name="Sites:",
-                    breaks=c("BFB", "DGM", "SSH", "EWB", "WSC", "HDB", "SNC"),
-                    labels=c("Bedford barren","Dusty goldenrod meadow", "Slate shale hill", "Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
+  scale_fill_manual(values=c("#B2DF8A","#FDBF6F","#33A02C","#FB9A99"),name="Sites:",
+                    breaks=c("EWB", "WSC", "HDB", "SNC"),
+                    labels=c("Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
 richness.plot.n_gr
 
 #site abundance by site type
@@ -2270,16 +2268,16 @@ abundance.plot.n_gr<-ggplot(greenroofNE, aes(x = factor(habitat,level = c("Groun
 abundance.plot.n_gr
 
 #site diversity by site type
-diversity.plot.n_gr<-ggplot(greenroofNE, aes(x = factor(habitat,level = c("Ground-level","Greenroof")), y = diversity, fill=Site))+
+diversity.plot.n_gr<-ggplot(greenroofNE, aes(x = factor(design,level = c("SE","BE")), y = diversity, fill=Site))+
   geom_boxplot()+
   theme_bw()+
   theme(legend.position="bottom")+
-  labs(title="", x="", y="Diversity")+
+  labs(title="", x="", y="Shannon Diversity")+
   #theme (plot.title = element_text(hjust=0.5))+
   #geom_text(data=div.cld.s, aes(y = 2, label = .group))+
-  scale_fill_brewer(palette="Paired",name="Sites:",
-                    breaks=c("BFB", "DGM", "SSH", "EWB", "WSC", "HDB", "SNC"),
-                    labels=c("Bedford barren","Dusty goldenrod meadow", "Slate shale hill", "Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
+  scale_fill_manual(values=c("#B2DF8A","#FDBF6F","#33A02C","#FB9A99"),name="Sites:",
+                    breaks=c("EWB", "WSC", "HDB", "SNC"),
+                    labels=c("Edgewater beach", "Watershed stewardship center", "Happy dog bike box", "Shaker Lakes nature center"))
 diversity.plot.n_gr
 
 #site evenness by site type
@@ -2299,10 +2297,33 @@ evenness.plot.n_gr
 #mush together plots
 library(ggpubr) 
 naturalenemy.gr_boxplot <- ggarrange(richness.plot.n_gr, diversity.plot.n_gr, 
-                                  ncol = 1, nrow = 2,
+                                  ncol = 2, nrow = 1,
                                   common.legend = TRUE, legend = "bottom")
 naturalenemy.gr_boxplot
 
 pdf("naturalenemy.gr_boxplot.pdf", height=8, width=8) #height and width in inches
 naturalenemy.gr_boxplot
+dev.off()
+
+#merge beneficial insects boxplots into one figure
+#pollinator
+combinedpollinator_boxplot <- ggarrange(pollinator_boxplot, pollinator.gr_boxplot,
+                                labels = c("Pollinator",""),
+                                ncol = 1, nrow = 2,
+                                common.legend = TRUE, legend = "bottom")
+combinedpollinator_boxplot
+
+pdf("combinedpollinator_boxplot.pdf", height=8, width=8) #height and width in inches
+combinedpollinator_boxplot
+dev.off()
+
+#natural enemies
+combinedNE_boxplot <- ggarrange(naturalenemy_boxplot, naturalenemy.gr_boxplot,
+                                labels = c("Natural enemy",""),
+                                ncol = 1, nrow = 2,
+                                common.legend = TRUE, legend = "bottom")
+combinedNE_boxplot
+
+pdf("combinedNE_boxplot.pdf", height=8, width=8) #height and width in inches
+combinedNE_boxplot
 dev.off()
