@@ -1,11 +1,11 @@
 #bring in 2019 datasets
-bowls19 <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Insect%20ID%202019%20-%20Bowl_cleveland.csv",na.strings = NULL)
+bowls19 <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Data/Insect%20ID%202019%20-%20Bowl_cleveland.csv",na.strings = NULL)
 summary(bowls19)
 str(bowls19) 
-ramps19 <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Insect%20ID%202019%20-%20Ramp_cleveland.csv",na.strings = NULL)
+ramps19 <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Data/Insect%20ID%202019%20-%20Ramp_cleveland.csv",na.strings = NULL)
 summary(ramps19)
 str(ramps19)
-sticky19 <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Insect%20ID%202019%20-%20Sticky%20card_cleveland.csv",na.strings = NULL)
+sticky19 <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Data/Insect%20ID%202019%20-%20Sticky%20card_cleveland.csv",na.strings = NULL)
 summary(sticky19)
 str(sticky19)
 
@@ -52,13 +52,13 @@ str(naturalbugs19)
 
 ######
 #bring in 2021 data sets
-bowls21 <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Insect%20ID%202021%20-%20Bowl.csv",na.strings = NULL)
+bowls21 <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Data/Insect%20ID%202021%20-%20Bowl.csv",na.strings = NULL)
 summary(bowls21)
 str(bowls21) 
-jars21 <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Insect%20ID%202021%20-%20Jar.csv",na.strings = NULL)
+jars21 <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Data/Insect%20ID%202021%20-%20Jar.csv",na.strings = NULL)
 summary(jars21)
 str(jars21)
-sticky21 <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Insect%20ID%202021%20-%20Sticky%20card.csv",na.strings = NULL)
+sticky21 <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Data/Insect%20ID%202021%20-%20Sticky%20card.csv",na.strings = NULL)
 summary(sticky21)
 str(sticky21)
 
@@ -425,7 +425,7 @@ dev.off()
 library (vegan)
 
 #bring in data pooled by date-site
-allbugs_pooled <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_2019%20and%202021_pooled.csv", na.strings = NULL)
+allbugs_pooled <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Data/allbugs_2019%20and%202021_pooled.csv", na.strings = NULL)
 
 #Create matrix of environmental variables    
 env.matrix<-allbugs_pooled[c(1:3)]
@@ -475,7 +475,7 @@ anova(betadisper(distances_data, env.matrix$habitat))
 ##
 
 #NMDS of ground-level versus SE green roof
-SE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_pooled_SE%20and%20ground-level.csv", na.strings=NULL)
+SE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Data/allbugs_pooled_SE%20and%20ground-level.csv", na.strings=NULL)
 
 #Create matrix of environmental variables    
 env.matrix_SE<-SE[c(1:3)]
@@ -522,7 +522,7 @@ anova(betadisper(distances_data, env.matrix_SE$type))
 #
 
 #NMDS of ground-level versus BE green roof
-BE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/allbugs_pooled_BE%20and%20ground-level.csv", na.strings=NULL)
+BE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Data/allbugs_pooled_BE%20and%20ground-level.csv", na.strings=NULL)
 
 #Create matrix of environmental variables    
 env.matrix_BE<-BE[c(1:3)]
@@ -593,7 +593,7 @@ dev.off()
 library (vegan)
 
 #bring in data pooled by date-site
-greenroofbugs_pooled <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/greenroofbugs_2019%20and%202021_pooled.csv", na.strings = NULL)
+greenroofbugs_pooled <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Data/greenroofbugs_2019%20and%202021_pooled.csv", na.strings = NULL)
 
 #Create matrix of environmental variables    
 env.matrix_gr<-greenroofbugs_pooled[c(1:3)]
@@ -746,8 +746,8 @@ dev.off()
 #beneficial insect analyses
 
 #import data
-P <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/pollinators_2019%20and%202021.csv", na.strings = NULL)
-NE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/natural%20enemies_2019%20and%202021.csv", na.strings = NULL)
+P <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Data/pollinators_2019%20and%202021.csv", na.strings = NULL)
+NE <- read.csv("https://raw.githubusercontent.com/katiemmanning/Cleveland-insects/main/Data/natural%20enemies_2019%20and%202021.csv", na.strings = NULL)
 
 #To obtain richness counts
 P.rowsums <- rowSums(P[,6:8]>0)
