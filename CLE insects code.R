@@ -123,6 +123,7 @@ library (jtools)
 library (interactions)
 
 ##richness linear model
+
 richmodel <- lmer(richness~Date + habitat + Trap + (1|Site:Replicate), data=allbugs)  #AIC = 1774
 summary(richmodel)
 AIC(richmodel)
@@ -139,6 +140,18 @@ rich.emm.t
 #results: significant difference between all trap types 
 rich.cld.t<-multcomp::cld(rich.emm.t, alpha = 0.05, Letters = LETTERS)
 rich.cld.t 
+
+#to see comparisons of sites
+richmodel.site <- lm(richness~Date + habitat + Trap + Site, data=allbugs)  
+summary(richmodel.site)
+AIC(richmodel.site)
+anova(richmodel.site) 
+
+rich.emm.s<-emmeans(richmodel.site,pairwise~Site) 
+rich.emm.s
+#results: significant difference between some sites
+rich.cld.s<-multcomp::cld(rich.emm.s, alpha = 0.05, Letters = LETTERS)
+rich.cld.s 
 
 #check assumptions
 dotchart(allbugs$richness, main = "richness") # way to visualize outliers
@@ -186,6 +199,18 @@ div.emm.t
 #results: difference = bowl-jar, bowl-ramp, jar-ramp, jar-sticky... similar = bowl-sticky & ramp-sticky
 div.cld.t<-multcomp::cld(div.emm.t, alpha = 0.05, Letters = LETTERS)
 div.cld.t 
+
+#to see comparisons of sites
+divmodel.site <- lm(diversity~Date + habitat + Trap + Site, data=allbugs)  
+summary(divmodel.site)
+AIC(divmodel.site)
+anova(divmodel.site) 
+
+div.emm.s<-emmeans(divmodel.site,pairwise~Site) 
+div.emm.s
+#results: significant difference between some sites
+div.cld.s<-multcomp::cld(div.emm.s, alpha = 0.05, Letters = LETTERS)
+div.cld.s 
 
 #check assumptions
 dotchart(allbugs$diversity, main = "diversity") # way to visualize outliers
@@ -282,6 +307,18 @@ rich.emm.t
 rich.cld.t<-multcomp::cld(rich.emm.t, alpha = 0.05, Letters = LETTERS)
 rich.cld.t 
 
+#to see comparisons of sites
+richmodel.site <- lm(richness~Date + design + Trap + Site, data=greenroofbugs)  
+summary(richmodel.site)
+AIC(richmodel.site)
+anova(richmodel.site) 
+
+rich.emm.s<-emmeans(richmodel.site,pairwise~Site) 
+rich.emm.s
+#results: significant difference between some sites
+rich.cld.s<-multcomp::cld(rich.emm.s, alpha = 0.05, Letters = LETTERS)
+rich.cld.s 
+
 #check assumptions
 dotchart(greenroofbugs$richness, main = "richness") # way to visualize outliers
 
@@ -328,6 +365,19 @@ div.emm.t
 #results: sig diff between all except bowl-ramp & ramp-sticky
 div.cld.t<-multcomp::cld(div.emm.t, alpha = 0.05, Letters = LETTERS)
 div.cld.t 
+
+#to see comparisons of sites
+divmodel.site <- lm(diversity~Date + design + Trap + Site, data=greenroofbugs)  
+summary(divmodel.site)
+AIC(divmodel.site)
+anova(divmodel.site) 
+
+div.emm.s<-emmeans(divmodel.site,pairwise~Site) 
+div.emm.s
+#results: significant difference between some sites
+div.cld.s<-multcomp::cld(div.emm.s, alpha = 0.05, Letters = LETTERS)
+div.cld.s 
+
 
 #check assumptions
 dotchart(greenroofbugs$diversity, main = "diversity") # way to visualize outliers
